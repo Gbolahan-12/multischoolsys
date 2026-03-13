@@ -102,6 +102,13 @@
                                         </button>
                                     </form>
                                     @endif
+                                    <form action="{{ route('superadmin.schools.delete', $school) }}" method="POST">
+                                        @csrf
+                                        <button class="btn-outline-0 border-0 bg-transparent text-danger" title="Delete"
+                                                onclick="return confirm('Delete {{ addslashes($school->name) }}?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

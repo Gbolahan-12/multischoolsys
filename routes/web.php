@@ -185,6 +185,7 @@ Route::middleware(['auth', 'permission:manage schools'])->prefix('super-admin')-
         Route::get('/', [SchoolsController::class, 'index'])->name('index');
         Route::get('/{school}', [SchoolsController::class, 'show'])->name('show');
         Route::post('/{school}/activate', [SchoolsController::class, 'activate'])->name('activate');
+        Route::post('/{school}/delete', [SchoolsController::class, 'destroy'])->name('delete');
         Route::post('/{school}/ban', [SchoolsController::class, 'ban'])->name('ban');
         Route::post('/{school}/reactivate', [SchoolsController::class, 'reactivate'])->name('reactivate');
     });

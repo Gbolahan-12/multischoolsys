@@ -49,6 +49,12 @@ class SchoolsController extends Controller
         return back()->with('success', "✅ {$school->name} has been activated. Default roles and permissions have been created.");
     }
 
+    public function destroy(School $school){
+        $school->delete();
+        return back()->with('success', "✅ {$school->name} has been deleted successfully!");
+
+    }
+
     public function ban(Request $request, School $school)
     {
         $request->validate([
