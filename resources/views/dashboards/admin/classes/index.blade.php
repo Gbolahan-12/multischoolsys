@@ -67,7 +67,7 @@
                                             <h5 class="fw-bold mb-1">{{ $class->full_name }}</h5>
                                             <small class="text-muted">
                                                 <i class="bi bi-person me-1"></i>
-                                                {{ $class->formTeacher?->name ?? 'No form teacher' }}
+                                                {{ $class->formTeacher?->fullname ?? 'No form teacher' }}
                                             </small>
                                         </div>
                                         <div class="dropdown">

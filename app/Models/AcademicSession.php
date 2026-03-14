@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class AcademicSession extends Model
 {
@@ -28,8 +29,8 @@ class AcademicSession extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('school', function (Builder $builder) {
-            if (auth()->check()) {
-                $builder->where('academic_sessions.school_id', auth()->user()->school_id);
+            if (Auth::check()) {
+                $builder->where('academic_sessions.school_id', Auth::user()->school_id);
             }
         });
     }

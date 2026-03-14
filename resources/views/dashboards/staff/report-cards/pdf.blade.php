@@ -445,7 +445,8 @@
                         <div class="info-row">
                             <div class="info-label">Class</div>
                             <div class="info-value">:
-                                {{ $class->name }}{{ $class->section->name ? ' (' . $class->section->name . ')' : '' }}</div>
+                                {{ $class->name }}{{ $class->section->name ? ' (' . $class->section->name . ')' : '' }}
+                            </div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Session</div>
@@ -459,11 +460,11 @@
                 </div>
                 {{-- <div class="student-info-right">
                     @if($student->photo)
-                        <img src="{{ public_path('storage/' . $student->photo) }}" class="student-photo" alt="Photo">
+                    <img src="{{ public_path('storage/' . $student->photo) }}" class="student-photo" alt="Photo">
                     @else
-                        <div class="student-photo-placeholder">
-                            {{ strtoupper(substr($student->first_name, 0, 1)) }}
-                        </div>
+                    <div class="student-photo-placeholder">
+                        {{ strtoupper(substr($student->first_name, 0, 1)) }}
+                    </div>
                     @endif
                     <div style="font-size:9px;color:#777;margin-top:4px;">Student Photo</div>
                 </div> --}}

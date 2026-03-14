@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'school.active' => \App\Http\Middleware\CheckSchoolActive::class,
+            'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class
 
         ]);
     })

@@ -11,19 +11,19 @@
             <small class="text-muted">All schools across the system</small>
         </div>
         <a href="{{ route('superadmin.schools.index') }}" class="btn btn-primary btn-sm px-3">
-            <i class="feather-list me-1"></i> Manage Schools
+            <i class="bi bi-house-gear"></i> Manage Schools
         </a>
     </div>
 
     <div class="row g-3 mb-4">
         @php
             $cards = [
-                ['label' => 'Total Schools',   'value' => $stats['total_schools'],   'icon' => 'feather-home',        'color' => '#0d6efd'],
-                ['label' => 'Active Schools',  'value' => $stats['active_schools'],  'icon' => 'feather-check-circle','color' => '#198754'],
-                ['label' => 'Pending Payment', 'value' => $stats['pending_schools'], 'icon' => 'feather-clock',       'color' => '#ffc107'],
-                ['label' => 'Banned Schools',  'value' => $stats['banned_schools'],  'icon' => 'feather-slash',       'color' => '#dc3545'],
-                ['label' => 'Total Students',  'value' => $stats['total_students'],  'icon' => 'feather-users',       'color' => '#6f42c1'],
-                ['label' => 'Total Staff',     'value' => $stats['total_staff'],     'icon' => 'feather-briefcase',   'color' => '#0dcaf0'],
+                ['label' => 'Total Schools',   'value' => $stats['total_schools'],   'icon' => 'bi-buildings',        'color' => '#0d6efd'],
+                ['label' => 'Active Schools',  'value' => $stats['active_schools'],  'icon' => 'bi-building-check','color' => '#198754'],
+                ['label' => 'Pending Schools', 'value' => $stats['pending_schools'], 'icon' => 'bi-building-exclamation',       'color' => '#ffc107'],
+                ['label' => 'Banned Schools',  'value' => $stats['banned_schools'],  'icon' => 'bi-building-slash',       'color' => '#dc3545'],
+                ['label' => 'Total Students',  'value' => $stats['total_students'],  'icon' => 'bi-people',       'color' => '#6f42c1'],
+                ['label' => 'Total Staff',     'value' => $stats['total_staff'],     'icon' => 'bi-person',   'color' => '#0dcaf0'],
             ];
         @endphp
 
@@ -34,7 +34,8 @@
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <div class="rounded-2 d-flex align-items-center justify-content-center"
                              style="width:36px;height:36px;background:{{ $card['color'] }}1a;">
-                            <i class="{{ $card['icon'] }}" style="color:{{ $card['color'] }};font-size:16px;"></i>
+                            {{-- <i class="{{ $card['icon'] }}" style="color:{{ $card['color'] }};font-size:16px;"></i> --}}
+                            <i class="bi {{ $card['icon'] }}"></i>
                         </div>
                     </div>
                     <div class="fw-bold" style="font-size:1.6rem;line-height:1;">{{ number_format($card['value']) }}</div>

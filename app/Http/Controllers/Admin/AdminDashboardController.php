@@ -10,9 +10,9 @@ use App\Models\Student;
 use App\Models\Term;
 use App\Models\User;
 use App\Models\UserProfile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -25,7 +25,6 @@ class AdminDashboardController extends Controller
         $currentSession = AcademicSession::current()->first();
         $currentTerm = Term::current()->first();
 
-        // ── Stat Cards ────────────────────────────────────────
         $totalStudents = Student::active()->count();
 
         // User model uses banned_at column not is_banned
@@ -51,7 +50,7 @@ class AdminDashboardController extends Controller
                     ->from('fees')
                     ->join('fee_types', 'fees.fee_type_id', '=', 'fee_types.id')
                     ->where('fees.term_id', $currentTerm->id)
-                    ->where('fee_types.type', 'compulsory'); // ← correct table
+                    ->where('fee_types.type', 'compulsory');
             }))
             ->distinct('student_id')
             ->count('student_id');
@@ -192,6 +191,7 @@ class AdminDashboardController extends Controller
             ->with('staff_id', $user->staff_id)
             ->with('temp_email', $user->email);
     }
+
     public function show(User $user)
     {
         $this->authorizeSchoolAccess($user);

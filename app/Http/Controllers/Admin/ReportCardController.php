@@ -72,7 +72,9 @@ class ReportCardController extends Controller
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'defaultFont' => 'sans-serif',
-                'isRemoteEnabled' => true,
+                'isRemoteEnabled' => true, 
+                'isLocalEnabled' => true,
+                'chroot' => public_path(),
                 'dpi' => 150,
             ]);
 

@@ -26,7 +26,7 @@ use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Models\SchoolClass;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+Route::middleware('guest')->get('/', function () {
     return view('auth.login');
 })->name('loginview');
 
@@ -51,7 +51,7 @@ Route::middleware(['auth', 'role:super-admin'])->group(function () {
 
 
 
-Route::middleware(['auth', 'verified','school.active', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified','school.active', 'role:admin,proprietor'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/classlist', [SchoolClassController::class, 'classlistView'])->name('class-list');
     Route::post('/classlist', [SchoolClassController::class, 'storeClass'])->name('class-store');
@@ -86,8 +86,8 @@ Route::middleware(['auth', 'verified','school.active', 'role:admin'])->prefix('a
     Route::post('/students', [SchoolClassController::class, 'storestudent'])->name('store-student');
     Route::get('/classes/{school}/by-school', [StaffDashboard::class, 'classesBySchool'])->name('admin.classes.by.school');
     Route::get('/students/{class}/by-class', [StaffDashboard::class, 'studentsByClass'])->name('admin.students.by.class');
-    Route::get('/subjects/create', [AdminDashboard::class, 'create'])->name('subjects.create');
-    Route::post('/subjects/store', [AdminDashboard::class, 'store'])->name('subjects.store');
+    // Route::get('/subjects/create', [AdminDashboard::class, 'create'])->name('subjects.create');
+    // Route::post('/subjects/store', [AdminDashboard::class, 'store'])->name('subjects.store');
     Route::get('/get-classes/{schoolId}', function ($schoolId) {
         return SchoolClass::where('school_id', $schoolId)->get();
     });
