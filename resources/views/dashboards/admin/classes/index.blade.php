@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
-                                             <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
+                                                <i class="icon-lg text-muted pb-3px" data-feather="more-horizontal"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                                 <li>
@@ -223,31 +223,68 @@
                                         <div class="modal-body p-4">
                                             @php
                                                 $assignedIds = $class->subjectAssignments->pluck('subject_id')->toArray();
-                                                $availableSubjects = \App\Models\Subject::whereNotIn('id', $assignedIds)->orderBy('name')->get();
+                                                $availableSubjects = \App\Models\Subject::whereNotIn('id', $assignedIds)
+                                                    ->orderBy('name')->get();
                                             @endphp
+
                                             @if($availableSubjects->isEmpty())
                                                 <p class="text-muted text-center py-2 mb-0">All subjects are already assigned.</p>
                                             @else
+                                                {{-- Teacher select --}}
                                                 <div class="mb-3">
-                                                    <label class="form-label fw-medium">Subject <span
-                                                            class="text-danger">*</span></label>
-                                                    <select name="subject_id" class="form-select" required>
-                                                        <option value="">-- Select Subject --</option>
-                                                        @foreach($availableSubjects as $subject)
-                                                            <option value="{{ $subject->id }}">
-                                                                {{ $subject->name }}{{ $subject->code ? " ({$subject->code})" : '' }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label class="form-label fw-medium">Teacher</label>
+                                                    <label class="form-label fw-medium">Teacher
+                                                        <span class="text-muted fw-normal" style="font-size:12px;">(applies to all
+                                                            selected)</span>
+                                                    </label>
                                                     <select name="teacher_id" class="form-select">
                                                         <option value="">-- None --</option>
                                                         @foreach($staff as $s)
                                                             <option value="{{ $s->id }}">{{ $s->fullname }}</option>
                                                         @endforeach
                                                     </select>
+                                                </div>
+
+                                                {{-- Subject checkboxes --}}
+                                                <div class="mb-2">
+                                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                                        <label class="form-label fw-medium mb-0">
+                                                            Subjects <span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="d-flex gap-2" style="font-size:12px;">
+                                                            <a href="#" class="text-primary text-decoration-none"
+                                                                id="selectAll{{ $class->id }}">
+                                                                Select All
+                                                            </a>
+                                                            <span class="text-muted">|</span>
+                                                            <a href="#" class="text-secondary text-decoration-none"
+                                                                id="clearAll{{ $class->id }}">
+                                                                Clear
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="border rounded-3 p-3" style="max-height:250px;overflow-y:auto;">
+                                                        @foreach($availableSubjects as $subject)
+                                                            <div class="form-check mb-2 ml-2">
+                                                                <input class="form-check-input subject-check-{{ $class->id }}"
+                                                                    type="checkbox" name="subject_ids[]" value="{{ $subject->id }}"
+                                                                    id="subject_{{ $class->id }}_{{ $subject->id }}">
+                                                                <label class="form-check-label"
+                                                                    for="subject_{{ $class->id }}_{{ $subject->id }}">
+                                                                    {{ $subject->name }}
+                                                                    @if($subject->code)
+                                                                        <span class="text-muted"
+                                                                            style="font-size:12px;">({{ $subject->code }})</span>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+
+                                                    {{-- Selected count badge --}}
+                                                    <div class="mt-2 text-muted" style="font-size:12px;">
+                                                        <span id="selectedCount{{ $class->id }}">0</span> subject(s) selected
+                                                    </div>
                                                 </div>
                                             @endif
                                         </div>
@@ -366,16 +403,16 @@
                     <form action="{{ route('admin.subjects.store') }}" method="POST" class="mb-4">
                         @csrf
                         <div class="row g-2 align-items-end">
-                            <div class="col-12 col-sm-5">
+                            <div class="col-12 col-sm-6">
                                 <label class="form-label fw-medium">Subject Name <span class="text-danger">*</span></label>
                                 <input type="text" name="name" class="form-control form-control-sm"
                                     placeholder="e.g. Mathematics" required>
                             </div>
-                            <div class="col-12 col-sm-3">
+                            {{-- <div class="col-12 col-sm-3">
                                 <label class="form-label fw-medium">Code</label>
                                 <input type="text" name="code" class="form-control form-control-sm" placeholder="e.g. MTH">
-                            </div>
-                            <div class="col-12 col-sm-4">
+                            </div> --}}
+                            <div class="col-12 col-sm-6">
                                 <button type="submit" class="btn btn-primary btn-sm w-100">
                                     <i class="bi bi-plus me-1"></i> Add Subject
                                 </button>
@@ -387,8 +424,8 @@
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3 py-2">Subject</th>
-                                    <th class="py-2">Code</th>
-                                    <th class="py-2">Classes</th>
+                                    {{-- <th class="py-2">Code</th>
+                                    <th class="py-2">Classes</th> --}}
                                     <th class="py-2 pe-3 text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -396,10 +433,10 @@
                                 @forelse(\App\Models\Subject::withCount('classAssignments')->orderBy('name')->get() as $subject)
                                     <tr>
                                         <td class="ps-3 fw-semibold">{{ $subject->name }}</td>
-                                        <td class="text-muted">{{ $subject->code ?? '—' }}</td>
-                                        <td><span
-                                                class="badge bg-primary bg-opacity-10 text-primary rounded-pill">{{ $subject->class_assignments_count }}</span>
-                                        </td>
+                                        {{-- <td class="text-muted">{{ $subject->code ?? '—' }}</td> --}}
+                                        {{-- <td><span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">{{
+                                                $subject->class_assignments_count }}</span>
+                                        </td> --}}
                                         <td class="pe-3 text-end">
                                             <form action="{{ route('admin.subjects.destroy', $subject) }}" method="POST"
                                                 class="d-inline">
@@ -425,3 +462,42 @@
     </div>
 
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Handle each class modal independently
+    @foreach($classes->flatten() as $class)
+    (function () {
+        const classId    = {{ $class->id }};
+        const checkboxes = document.querySelectorAll(`.subject-check-${classId}`);
+        const countEl    = document.getElementById(`selectedCount${classId}`);
+        const selectAll  = document.getElementById(`selectAll${classId}`);
+        const clearAll   = document.getElementById(`clearAll${classId}`);
+
+        if (!checkboxes.length) return;
+
+        function updateCount() {
+            const checked = document.querySelectorAll(`.subject-check-${classId}:checked`).length;
+            if (countEl) countEl.textContent = checked;
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener('change', updateCount));
+
+        if (selectAll) {
+            selectAll.addEventListener('click', function (e) {
+                e.preventDefault();
+                checkboxes.forEach(cb => cb.checked = true);
+                updateCount();
+            });
+        }
+
+        if (clearAll) {
+            clearAll.addEventListener('click', function (e) {
+                e.preventDefault();
+                checkboxes.forEach(cb => cb.checked = false);
+                updateCount();
+            });
+        }
+    })();
+    @endforeach
+});
+</script>

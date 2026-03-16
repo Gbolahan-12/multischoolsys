@@ -1,138 +1,160 @@
 <nav class="sidebar">
   <div class="sidebar-header">
-    <a @if (auth()->user()->role === 'admin') href="{{ route('admin.dashboard') }}" @else
-    href="{{ route('proprietor.dashboard') }}" @endif class="sidebar-brand">
+    <a @if (auth()->user()->role === 'admin') href="{{ route('admin.dashboard') }}" 
+       @else href="{{ route('proprietor.dashboard') }}" @endif class="sidebar-brand">
       MultiSchool<span>Sys</span>
     </a>
+
     <div class="sidebar-toggler not-active">
       <span></span>
       <span></span>
       <span></span>
     </div>
   </div>
+
   <div class="sidebar-body">
     <ul class="nav">
+
       <li class="nav-item nav-category">Main</li>
-      <li class="nav-item">@if(auth()->user()->role === 'admin')
-        <a href="{{ route('admin.dashboard') }}" class="nav-link">
-      @else
-            <a href="{{ route('proprietor.dashboard') }}" class="nav-link">
-          @endif
+
+      <li class="nav-item {{ request()->routeIs('admin.dashboard') || request()->routeIs('proprietor.dashboard') ? 'active' : '' }}">
+        @if(auth()->user()->role === 'admin')
+          <a href="{{ route('admin.dashboard') }}" class="nav-link">
+        @else
+          <a href="{{ route('proprietor.dashboard') }}" class="nav-link">
+        @endif
             <i class="link-icon" data-feather="box"></i>
             <span class="link-title">Dashboard</span>
           </a>
       </li>
-      <li class="nav-item nav-category">web apps</li>
+
+      <li class="nav-item nav-category">Web Apps</li>
+
+      <!-- Result -->
       <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#emails" role="button" aria-expanded="false"
-          aria-controls="emails">
+        <a class="nav-link {{ request()->routeIs('staff.results.*') ? '' : 'collapsed' }}"
+           data-toggle="collapse"
+           href="#emails"
+           role="button"
+           aria-expanded="{{ request()->routeIs('staff.results.*') ? 'true' : 'false' }}">
+           
           <i class="link-icon" data-feather="book"></i>
           <span class="link-title">Result</span>
           <i class="link-arrow" data-feather="chevron-down"></i>
         </a>
-        <div class="collapse" id="emails">
+
+        <div class="collapse {{ request()->routeIs('staff.results.*') ? 'show' : '' }}" id="emails">
           <ul class="nav sub-menu">
             <li class="nav-item">
-              <a href="{{ route('staff.results.index') }}" class="nav-link">Results</a>
+              <a href="{{ route('staff.results.index') }}"
+                 class="nav-link {{ request()->routeIs('staff.results.index') ? 'active' : '' }}">
+                 Results
+              </a>
             </li>
-            <li class="nav-item">
-              <a href="{{ route('admin.students.import.form') }}" class="nav-link">Upload Students</a>
-            </li>
-            {{-- <li class="nav-item">
-              <a href="{{ route('students.import.excel.form') }}" class="nav-link">Upload Student Excel</a>
-            </li> --}}
           </ul>
         </div>
       </li>
-      <li class="nav-item">
+
+      <!-- Students -->
+      <li class="nav-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
         <a href="{{ route('admin.students.index') }}" class="nav-link">
           <i class="link-icon" data-feather="users"></i>
           <span class="link-title">Students</span>
         </a>
       </li>
-      <li class="nav-item">
+
+      <!-- Staff -->
+      <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
         <a href="{{ route('admin.users.index') }}" class="nav-link">
           <i class="link-icon" data-feather="user"></i>
           <span class="link-title">Staff</span>
         </a>
       </li>
+
+      <!-- Payments -->
       <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#uiComponents" role="button" aria-expanded="false"
-          aria-controls="uiComponents">
+        <a class="nav-link {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? '' : 'collapsed' }}"
+           data-toggle="collapse"
+           href="#uiComponents"
+           role="button"
+           aria-expanded="{{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? 'true' : 'false' }}">
+           
           <i class="link-icon" data-feather="credit-card"></i>
           <span class="link-title">Payment</span>
           <i class="link-arrow" data-feather="chevron-down"></i>
         </a>
-        <div class="collapse" id="uiComponents">
+
+        <div class="collapse {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? 'show' : '' }}" id="uiComponents">
           <ul class="nav sub-menu">
+
             <li class="nav-item">
-              <a href="{{ route('admin.payments.create') }}" class="nav-link">Record Payment</a>
+              <a href="{{ route('admin.payments.create') }}"
+                 class="nav-link {{ request()->routeIs('admin.payments.create') ? 'active' : '' }}">
+                 Record Payment
+              </a>
             </li>
+
             <li class="nav-item">
-              <a href="{{ route('admin.paid-students.index') }}" class="nav-link">Completed</a>
+              <a href="{{ route('admin.paid-students.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.paid-students.index') ? 'active' : '' }}">
+                 Completed
+              </a>
             </li>
+
             <li class="nav-item">
-              <a href="{{ route('admin.payments.defaulter.index') }}" class="nav-link">Optional</a>
+              <a href="{{ route('admin.payments.defaulter.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.payments.defaulter.*') ? 'active' : '' }}">
+                 Optional
+              </a>
             </li>
+
             <li class="nav-item">
-              <a href="{{ route('admin.payments.index') }}" class="nav-link">All Payments</a>
+              <a href="{{ route('admin.payments.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.payments.index') ? 'active' : '' }}">
+                 All Payments
+              </a>
             </li>
+
           </ul>
         </div>
       </li>
+
       <li class="nav-item nav-category">Components</li>
+
+      <!-- Classes -->
       <li class="nav-item">
-        <a class="nav-link" data-toggle="collapse" href="#advancedUI" role="button" aria-expanded="false"
-          aria-controls="advancedUI">
+        <a class="nav-link {{ request()->routeIs('admin.classes.*') || request()->routeIs('admin.fees.*') ? '' : 'collapsed' }}"
+           data-toggle="collapse"
+           href="#advancedUI"
+           role="button"
+           aria-expanded="{{ request()->routeIs('admin.classes.*') || request()->routeIs('admin.fees.*') ? 'true' : 'false' }}">
+
           <i class="link-icon" data-feather="home"></i>
           <span class="link-title">Classes</span>
           <i class="link-arrow" data-feather="chevron-down"></i>
         </a>
-        <div class="collapse" id="advancedUI">
+
+        <div class="collapse {{ request()->routeIs('admin.classes.*') || request()->routeIs('admin.fees.*') ? 'show' : '' }}" id="advancedUI">
           <ul class="nav sub-menu">
+
             <li class="nav-item">
-              <a href="{{ route('admin.classes.index') }}" class="nav-link">Class List</a>
+              <a href="{{ route('admin.classes.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.classes.index') ? 'active' : '' }}">
+                 Class List
+              </a>
             </li>
+
             <li class="nav-item">
-              <a href="{{route('admin.fees.index')}}" class="nav-link">Class Fee</a>
+              <a href="{{ route('admin.fees.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.fees.*') ? 'active' : '' }}">
+                 Class Fee
+              </a>
             </li>
+
           </ul>
         </div>
       </li>
+
     </ul>
   </div>
 </nav>
-{{-- <nav class="settings-sidebar">
-  <div class="sidebar-body">
-    <a href="#" class="settings-sidebar-toggler">
-      <i data-feather="settings"></i>
-    </a>
-    <h6 class="text-muted">Sidebar:</h6>
-    <div class="form-group border-bottom">
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="sidebarThemeSettings" id="sidebarLight"
-            value="sidebar-light" checked>
-          Light
-        </label>
-      </div>
-      <div class="form-check form-check-inline">
-        <label class="form-check-label">
-          <input type="radio" class="form-check-input" name="sidebarThemeSettings" id="sidebarDark"
-            value="sidebar-dark">
-          Dark
-        </label>
-      </div>
-    </div>
-    <div class="theme-wrapper">
-      <h6 class="text-muted mb-2">Light Theme:</h6>
-      <a class="theme-item active" href="../demo_1/dashboard-one.html">
-        <img src="../assets/images/screenshots/light.jpg" alt="light theme">
-      </a>
-      <h6 class="text-muted mb-2">Dark Theme:</h6>
-      <a class="theme-item" href="../demo_2/dashboard-one.html">
-        <img src="../assets/images/screenshots/dark.jpg" alt="light theme">
-      </a>
-    </div>
-  </div>
-</nav> --}}

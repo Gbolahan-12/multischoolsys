@@ -8,7 +8,7 @@
     {{-- Header --}}
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-0">Dashboard</h4>
+            <h4 class="fw-bold mb-0">Proprietor Dashboard</h4>
             <small class="text-muted">
                 Welcome back, <strong>{{ auth()->user()->name }}</strong> &bull;
                 @if($currentSession && $currentTerm)

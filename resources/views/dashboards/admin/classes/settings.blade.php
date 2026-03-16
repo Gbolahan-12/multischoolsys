@@ -19,7 +19,7 @@
     <div class="row g-4">
 
         {{-- Levels --}}
-        <div class="col-12 col-lg-6">
+        {{-- <div class="col-12 col-lg-6">
             <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
                     <div>
@@ -28,8 +28,6 @@
                     </div>
                     <span class="badge bg-primary rounded-pill">{{ $levels->count() }}</span>
                 </div>
-
-                {{-- Add Level Form --}}
                 <div class="card-body border-bottom pb-4">
                     <form action="{{ route('admin.classes.settings.levels.store') }}" method="POST">
                         @csrf
@@ -44,8 +42,6 @@
                         @error('name')<div class="invalid-feedback d-block mt-1">{{ $message }}</div>@enderror
                     </form>
                 </div>
-
-                {{-- Levels List --}}
                 <div class="card-body p-0">
                     @forelse($levels as $level)
                     <div class="d-flex align-items-center justify-content-between px-4 py-3 border-bottom">
@@ -68,8 +64,6 @@
                             </form>
                         </div>
                     </div>
-
-                    {{-- Edit Level Modal --}}
                     <div class="modal fade" id="editLevelModal{{ $level->id }}" tabindex="-1">
                         <div class="modal-dialog modal-dialog-centered modal-sm">
                             <div class="modal-content border-0 shadow">
@@ -101,10 +95,10 @@
                     @endforelse
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         {{-- Sections --}}
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-12">
             <div class="card border-0 shadow-sm rounded-3">
                 <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
                     <div>

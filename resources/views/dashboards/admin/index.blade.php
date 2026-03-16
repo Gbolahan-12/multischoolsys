@@ -8,7 +8,7 @@
     {{-- Header --}}
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-0">Dashboard</h4>
+            <h4 class="fw-bold mb-0">Admin Dashboard</h4>
             <small class="text-muted">
                 @if($currentSession && $currentTerm)
                     {{ $currentSession->name }} &mdash; {{ ucfirst($currentTerm->name) }} Term

@@ -108,7 +108,6 @@ class ClassController extends Controller
     }
 
     // ── Assign Subject to Class ──────────────────────────────
-
     public function assignSubject(Request $request, SchoolClass $class)
     {
         $this->authorizeSchool($class);
@@ -120,24 +119,43 @@ class ClassController extends Controller
         }
 
         $request->validate([
-            'subject_id' => [
-                'required', 'exists:subjects,id',
-                Rule::unique('class_subject_assignments')->where(fn ($q) => $q
-                    ->where('class_id', $class->id)
-                    ->where('session_id', $currentSession->id)
-                ),
-            ],
+            'subject_ids' => ['required', 'array', 'min:1'],
+            'subject_ids.*' => ['exists:subjects,id'],
             'teacher_id' => ['nullable', 'exists:users,id'],
         ]);
 
-        ClassSubjectAssignment::create([
-            'class_id' => $class->id,
-            'subject_id' => $request->subject_id,
-            'teacher_id' => $request->teacher_id,
-            'session_id' => $currentSession->id,
-        ]);
+        $assigned = 0;
+        $skipped = 0;
 
-        return back()->with('success', 'Subject assigned successfully.');
+        foreach ($request->subject_ids as $subjectId) {
+            // Skip if already assigned in this session
+            $exists = ClassSubjectAssignment::where('class_id', $class->id)
+                ->where('subject_id', $subjectId)
+                ->where('session_id', $currentSession->id)
+                ->exists();
+
+            if ($exists) {
+                $skipped++;
+
+                continue;
+            }
+
+            ClassSubjectAssignment::create([
+                'class_id' => $class->id,
+                'subject_id' => $subjectId,
+                'teacher_id' => $request->teacher_id,
+                'session_id' => $currentSession->id,
+            ]);
+
+            $assigned++;
+        }
+
+        $message = "{$assigned} subject(s) assigned successfully.";
+        if ($skipped > 0) {
+            $message .= " {$skipped} skipped (already assigned).";
+        }
+
+        return back()->with('success', $message);
     }
 
     public function removeSubject(ClassSubjectAssignment $assignment)

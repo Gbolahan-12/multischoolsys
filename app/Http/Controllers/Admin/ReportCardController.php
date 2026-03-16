@@ -72,7 +72,7 @@ class ReportCardController extends Controller
             ->setPaper('a4', 'portrait')
             ->setOptions([
                 'defaultFont' => 'sans-serif',
-                'isRemoteEnabled' => true, 
+                'isRemoteEnabled' => true,
                 'isLocalEnabled' => true,
                 'chroot' => public_path(),
                 'dpi' => 150,
@@ -172,11 +172,13 @@ class ReportCardController extends Controller
             ['min' => 40, 'max' => 44,  'grade' => 'E',  'remark' => 'Fair'],
             ['min' => 0,  'max' => 39,  'grade' => 'F',  'remark' => 'Fail'],
         ];
+        $classPopulation = $students->count();
 
         return compact(
             'school', 'class', 'term', 'students',
             'subjects', 'resultMap', 'positions',
-            'studentTotals', 'gradeSystem', 'classAverages'
+            'studentTotals', 'gradeSystem', 'classAverages',
+            'classPopulation'
         );
     }
 

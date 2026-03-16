@@ -238,27 +238,30 @@
             display: table;
             width: 100%;
             margin-bottom: 10px;
+            border-collapse: collapse;
         }
 
         .summary-box {
             display: table-cell;
             text-align: center;
-            padding: 8px;
+            padding: 8px 4px;
             background: #f8f9ff;
             border: 1px solid #c5cae9;
         }
 
         .summary-box .val {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             color: #1a237e;
+            line-height: 1.2;
         }
 
         .summary-box .lbl {
-            font-size: 9px;
+            font-size: 8px;
             color: #777;
             text-transform: uppercase;
             letter-spacing: .3px;
+            margin-top: 2px;
         }
 
         /* ── Remarks & Signatures ── */
@@ -358,7 +361,6 @@
 
     @foreach($students as $student)
         @php
-            // Calculate this student's aggregate
             $aggregate = 0;
             $subCount = 0;
             foreach ($subjects as $subject) {
@@ -370,14 +372,13 @@
             }
             $average = $subCount > 0 ? round($aggregate / $subCount, 1) : 0;
             $position = $positions[$student->id] ?? '—';
-            $total = count($students);
 
             // Ordinal suffix
             $suffix = match (true) {
-                $position % 100 >= 11 && $position % 100 <= 13 => 'th',
-                $position % 10 === 1 => 'st',
-                $position % 10 === 2 => 'nd',
-                $position % 10 === 3 => 'rd',
+                is_numeric($position) && $position % 100 >= 11 && $position % 100 <= 13 => 'th',
+                is_numeric($position) && $position % 10 === 1 => 'st',
+                is_numeric($position) && $position % 10 === 2 => 'nd',
+                is_numeric($position) && $position % 10 === 3 => 'rd',
                 default => 'th',
             };
 
@@ -391,6 +392,16 @@
                     break;
                 }
             }
+
+            // Teacher remark
+            $teacherRemark = match (true) {
+                $average >= 75 => 'Excellent performance. Keep it up!',
+                $average >= 65 => 'Very good performance. Well done!',
+                $average >= 55 => 'Good performance. Keep working hard.',
+                $average >= 45 => 'Fair performance. More effort needed.',
+                $average >= 40 => 'Below average. Needs significant improvement.',
+                default => 'Poor performance. Must work harder next term.',
+            };
         @endphp
 
         <div class="report-card">
@@ -401,8 +412,7 @@
                     @if($school->logo)
                         <img src="{{ public_path($school->logo) }}" class="logo" alt="Logo">
                     @else
-                        <div class="logo-placeholder" style="display:inline-flex;">
-                        </div>
+                        <div class="logo-placeholder" style="display:inline-flex;"></div>
                     @endif
                 </div>
                 <div class="school-name">{{ $school->name }}</div>
@@ -440,7 +450,7 @@
                         </div>
                         <div class="info-row">
                             <div class="info-label">Gender</div>
-                            <div class="info-value">: {{ ucfirst($student->gender) }}</div>
+                            <div class="info-value">: {{ ucfirst($student->gender ?? '—') }}</div>
                         </div>
                         <div class="info-row">
                             <div class="info-label">Class</div>
@@ -458,16 +468,6 @@
                         </div>
                     </div>
                 </div>
-                {{-- <div class="student-info-right">
-                    @if($student->photo)
-                    <img src="{{ public_path('storage/' . $student->photo) }}" class="student-photo" alt="Photo">
-                    @else
-                    <div class="student-photo-placeholder">
-                        {{ strtoupper(substr($student->first_name, 0, 1)) }}
-                    </div>
-                    @endif
-                    <div style="font-size:9px;color:#777;margin-top:4px;">Student Photo</div>
-                </div> --}}
             </div>
 
             {{-- ── Grade Key ── --}}
@@ -486,14 +486,13 @@
                 <thead>
                     <tr>
                         <th class="subject-col" style="width:28%;">Subject</th>
-                        <th style="width:10%;">CA 1</th>
-                        <th style="width:10%;">CA 2</th>
-                        <th style="width:10%;">Exam</th>
-                        {{-- <th style="width:10%;">Bonus</th> --}}
-                        <th style="width:11%;">Total</th>
+                        <th style="width:9%;">CA 1</th>
+                        <th style="width:9%;">CA 2</th>
+                        <th style="width:9%;">Exam</th>
+                        <th style="width:10%;">Total</th>
                         <th style="width:10%;">Class Avg</th>
                         <th style="width:10%;">Grade</th>
-                        <th style="width:11%;">Remark</th>
+                        <th style="width:15%;">Remark</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -513,6 +512,7 @@
                                     }
                                 }
                             }
+
                             $avgStyle = '';
                             if ($classAvg && $r && $r->total_score !== null) {
                                 $avgStyle = (float) $r->total_score >= $classAvg
@@ -525,22 +525,28 @@
                             <td>{{ $r ? ($r->ca1_score ?? '—') : '—' }}</td>
                             <td>{{ $r ? ($r->ca2_score ?? '—') : '—' }}</td>
                             <td>{{ $r ? ($r->exam_score ?? '—') : '—' }}</td>
-                            {{-- <td>{{ $r && $r->bonus_mark > 0 ? $r->bonus_mark : '—' }}</td> --}}
                             <td><strong>{{ $r ? ($r->total_score ?? '—') : '—' }}</strong></td>
                             <td style="{{ $avgStyle }}">{{ $classAvg ?? '—' }}</td>
                             <td><span class="{{ $gradeClass }}">{{ $grade }}</span></td>
                             <td>{{ $subRemark }}</td>
                         </tr>
                     @endforeach
+
+                    {{-- Aggregate row --}}
                     <tr style="background:#e8eaf6;font-weight:700;">
                         <td class="subject-name" style="font-weight:700;">AGGREGATE</td>
-                        <td colspan="4" style="text-align:right;font-size:10px;color:#555;">Overall Average:</td>
+                        <td colspan="3" style="text-align:right;font-size:10px;color:#555;font-weight:400;">
+                            Overall Average:
+                        </td>
                         <td><strong>{{ $average }}</strong></td>
+                        <td>—</td>
                         <td><span class="grade-{{ strtolower($overallGrade) }}">{{ $overallGrade }}</span></td>
                         <td>{{ $overallRemark }}</td>
                     </tr>
                 </tbody>
             </table>
+
+            {{-- ── Summary Boxes ── --}}
             <div class="summary-row">
                 <div class="summary-box">
                     <div class="val">{{ $subCount }}</div>
@@ -555,8 +561,15 @@
                     <div class="lbl">Average</div>
                 </div>
                 <div class="summary-box">
-                    <div class="val">{{ $position }}<sup style="font-size:10px;">{{ $suffix }}</sup> / {{ $total }}</div>
+                    <div class="val">
+                        {{ is_numeric($position) ? $position : '—' }}<sup
+                            style="font-size:9px;">{{ is_numeric($position) ? $suffix : '' }}</sup>
+                    </div>
                     <div class="lbl">Position</div>
+                </div>
+                <div class="summary-box">
+                    <div class="val">{{ $classPopulation }}</div>
+                    <div class="lbl">Student In Class</div>
                 </div>
                 <div class="summary-box">
                     <div class="val grade-{{ strtolower($overallGrade) }}">{{ $overallGrade }}</div>
@@ -567,22 +580,14 @@
                     <div class="lbl">Remark</div>
                 </div>
             </div>
+
+            {{-- ── Class Teacher's Remark ── --}}
             <div class="remarks-section">
                 <div class="remarks-title">Class Teacher's Remark</div>
-                <div class="remark-line">
-                    @php
-                        $teacherRemark = match (true) {
-                            $average >= 75 => 'Excellent performance. Keep it up!',
-                            $average >= 65 => 'Very good performance. Well done!',
-                            $average >= 55 => 'Good performance. Keep working hard.',
-                            $average >= 45 => 'Fair performance. More effort needed.',
-                            $average >= 40 => 'Below average. Needs significant improvement.',
-                            default => 'Poor performance. Must work harder next term.',
-                        };
-                    @endphp
-                    {{ $teacherRemark }}
-                </div>
+                <div class="remark-line">{{ $teacherRemark }}</div>
             </div>
+
+            {{-- ── Signatures ── --}}
             <div class="sig-row">
                 <div class="sig-cell">
                     <div class="sig-line">Class Teacher's Signature</div>
@@ -595,16 +600,15 @@
                 </div>
             </div>
 
+            {{-- ── Resumption Bar ── --}}
             @if($term->end_date)
                 <div class="resumption-bar">
-                    Next Term Resumes:
                     @php
-                        // Add approximately 3 weeks to term end date
                         $resumption = \Carbon\Carbon::parse($term->end_date)->addWeeks(3);
                     @endphp
-                    <strong>{{ $resumption->format('l, d F Y') }}</strong>
-                    &nbsp;&bull;&nbsp; School closes:
-                    <strong>{{ \Carbon\Carbon::parse($term->end_date)->format('d F Y') }}</strong>
+                    Next Term Resumes: <strong>{{ $resumption->format('l, d F Y') }}</strong>
+                    &nbsp;&bull;&nbsp;
+                    School Closes: <strong>{{ \Carbon\Carbon::parse($term->end_date)->format('d F Y') }}</strong>
                 </div>
             @endif
 

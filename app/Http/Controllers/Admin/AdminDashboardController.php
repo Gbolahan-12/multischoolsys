@@ -35,13 +35,6 @@ class AdminDashboardController extends Controller
         // Payments join through fee to get term
         $feesCollected = Payment::when($currentTerm, fn ($q) => $q->whereHas('fee', fn ($q) => $q->where('term_id', $currentTerm->id))
         )->sum('amount_paid');
-
-        // $studentsOwing = Payment::when($currentTerm, fn($q) =>
-        //     $q->whereHas('fee', fn($q) => $q->where('term_id', $currentTerm->id))
-        // )
-        // ->whereIn('status', ['owing', 'partial'])
-        // ->distinct('student_id')
-        // ->count('student_id');
         $schoolId = Auth::user()->school_id;
         $studentsOwing = Payment::where('school_id', $schoolId)
             ->whereIn('status', ['owing', 'partial'])
@@ -142,6 +135,7 @@ class AdminDashboardController extends Controller
      */
     public function staffStore(Request $request)
     {
+        // dd(User::generateStaffId(Auth::user()->school_id));
         $request->validate([
             'fullname' => ['required', 'string', 'max:255'],
             'email' => [
@@ -246,6 +240,44 @@ class AdminDashboardController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', "{$user->fullname}'s account has been updated.");
+    }
+
+    public function ban(User $user)
+    {
+        $this->authorizeSchoolAccess($user);
+
+        $user->update([
+            'is_active' => false,
+            'banned_at' => now(),
+            'banned_by' => Auth::id(),
+        ]);
+
+        return back()->with('success', "{$user->fullname} has been banned.");
+    }
+
+    /**
+     * Unban a user.
+     */
+    public function unban(User $user)
+    {
+        $this->authorizeSchoolAccess($user);
+
+        $user->update([
+            'is_active' => true,
+            'banned_at' => null,
+            'banned_by' => null,
+        ]);
+
+        return back()->with('success', "{$user->fullname} has been unbanned.");
+    }
+
+    public function destroy(User $user)
+    {
+        $this->authorizeSchoolAccess($user);
+        $user->delete();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Account deleted successfully.');
     }
 
     private function authorizeSchoolAccess(User $user): void

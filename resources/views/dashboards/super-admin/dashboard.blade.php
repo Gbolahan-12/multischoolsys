@@ -120,7 +120,7 @@
                                         </a>
                                     </td>
                                     <td class="text-muted">
-                                        {{ optional($school->users->first())->name ?? '—' }}
+                                        {{ optional($school->users->first())->fullname ?? '—' }}
                                     </td>
                                     <td>{!! $school->status_badge !!}</td>
                                     <td class="text-muted">{{ $school->created_at->format('d M Y') }}</td>

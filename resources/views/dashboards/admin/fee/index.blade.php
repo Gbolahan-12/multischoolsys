@@ -132,11 +132,11 @@
                                                             <input type="number" name="amount" value="{{ $fee->amount }}"
                                                                 class="form-control" min="1" step="0.01" required>
                                                         </div>
-                                                        <div>
+                                                        {{-- <div>
                                                             <label class="form-label fw-medium">Description</label>
                                                             <input type="text" name="description" value="{{ $fee->description }}"
                                                                 class="form-control">
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                     <div class="modal-footer border-top">
                                                         <button type="button" class="btn btn-outline-secondary btn-sm"
@@ -269,7 +269,7 @@
                                     <option value="compulsory" {{ old('type', $fee->type ?? '') === 'compulsory' ? 'selected' : '' }}>
                                         Compulsory
                                     </option>
-                                    <option value="defaulter" {{ old('type', $fee->type ?? '') === 'defaulter' ? 'selected' : '' }}>
+                                    <option value="optional" {{ old('type', $fee->type ?? '') === 'optional' ? 'selected' : '' }}>
                                         Optional
                                     </option>
                                 </select>
@@ -341,11 +341,11 @@
                                                             <input type="text" name="name" value="{{ $type->name }}"
                                                                 class="form-control" required>
                                                         </div>
-                                                        <div>
+                                                        {{-- <div>
                                                             <label class="form-label fw-medium">Description</label>
                                                             <input type="text" name="description"
                                                                 value="{{ $type->description }}" class="form-control">
-                                                        </div>
+                                                        </div> --}}
                                                     </div>
                                                     <div class="modal-footer border-top">
                                                         <button type="button" class="btn btn-outline-secondary btn-sm"

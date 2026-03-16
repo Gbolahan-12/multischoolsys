@@ -177,6 +177,11 @@
         if (alert) {
             setTimeout(() => alert.remove(), 3000);
         }
+        // get current year
+		const day = new Date();
+		const current = day.getFullYear();
+		const year = document.querySelector('.year');
+		year.innerHTML = current;
         document.addEventListener("DOMContentLoaded", function () {
 
             const forms = document.querySelectorAll("form");

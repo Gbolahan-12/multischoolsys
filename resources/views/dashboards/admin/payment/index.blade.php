@@ -77,7 +77,7 @@
                             <option value="">All Classes</option>
                             @foreach($classes as $class)
                             <option value="{{ $class->id }}" {{ request('class_id') == $class->id ? 'selected' : '' }}>
-                                {{ $class->full_name }}
+                                {{ $class->name }}
                             </option>
                             @endforeach
                         </select>
@@ -155,11 +155,11 @@
                                     </a>
                                     <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST">
                                         @csrf @method('DELETE')
-                                        {{-- <button class="btn btn-outline-danger btn-sm align-center justify-content-center relative" style="width:15px; height: 15px;"
+                                        <button class="btn btn-outline-danger btn-sm align-center justify-content-center relative" style="width:15px; height: 15px;"
                                                 onclick="return confirm('Delete this payment record?')">
                                             <i data-feather="trash" class="absolute" style="width:15px;"></i></span>
-                                        </button> --}}
-                                        <a href="#" type="submit" onclick="return confirm('Delete this payment record?')"><span class="icon"><i data-feather="trash" class="text-danger"></i></span></a>
+                                        </button>
+                                        {{-- <a href="#" type="submit" onclick="return confirm('Delete this payment record?')"><span class="icon"><i data-feather="trash" class="text-danger"></i></span></a> --}}
                                     </form>
                                 </div>
                             </td>

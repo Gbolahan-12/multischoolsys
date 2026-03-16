@@ -133,37 +133,92 @@ class StudentController extends Controller
         return view('dashboards.admin.student.edit', compact('student'));
     }
 
+    // public function update(Request $request, Student $student)
+    // {
+    //     $this->authorizeSchool($student);
+
+    //     $request->validate([
+    //         'first_name' => ['required', 'string', 'max:100'],
+    //         'last_name' => ['required', 'string', 'max:100'],
+    //         'other_name' => ['nullable', 'string', 'max:100'],
+    //         'gender' => ['required', Rule::in(['male', 'female'])],
+    //         'date_of_birth' => ['nullable', 'date', 'before:today'],
+    //         'guardian_name' => ['required', 'string', 'max:255'],
+    //         'guardian_phone' => ['required', 'string', 'max:20'],
+    //         'guardian_email' => ['nullable', 'email'],
+    //         'address' => ['nullable', 'string', 'max:500'],
+    //         'admission_number' => [
+    //             'required', 'string', 'max:50',
+    //             Rule::unique('students')
+    //                 ->where('school_id', Auth::user()->school_id)
+    //                 ->ignore($student->id),
+    //         ],
+    //     ]);
+
+    //     $student->update($request->only([
+    //         'first_name', 'last_name', 'other_name', 'gender',
+    //         'date_of_birth', 'guardian_name', 'guardian_phone',
+    //         'guardian_email', 'address', 'admission_number',
+    //     ]));
+
+    //     return redirect()->route('admin.students.show', $student)
+    //         ->with('success', 'Student updated successfully.');
+    // }
+
+
     public function update(Request $request, Student $student)
-    {
-        $this->authorizeSchool($student);
+{
+    $this->authorizeSchool($student);
 
-        $request->validate([
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'other_name' => ['nullable', 'string', 'max:100'],
-            'gender' => ['required', Rule::in(['male', 'female'])],
-            'date_of_birth' => ['nullable', 'date', 'before:today'],
-            'guardian_name' => ['required', 'string', 'max:255'],
-            'guardian_phone' => ['required', 'string', 'max:20'],
-            'guardian_email' => ['nullable', 'email'],
-            'address' => ['nullable', 'string', 'max:500'],
-            'admission_number' => [
-                'required', 'string', 'max:50',
-                Rule::unique('students')
-                    ->where('school_id', Auth::user()->school_id)
-                    ->ignore($student->id),
-            ],
-        ]);
+    $request->validate([
+        'first_name'       => ['required', 'string', 'max:100'],
+        'last_name'        => ['required', 'string', 'max:100'],
+        'other_name'       => ['nullable', 'string', 'max:100'],
+        'gender'           => ['required', Rule::in(['male', 'female'])],
+        'date_of_birth'    => ['nullable', 'date', 'before:today'],
+        'guardian_name'    => ['required', 'string', 'max:255'],
+        'guardian_phone'   => ['required', 'string', 'max:20'],
+        'guardian_email'   => ['nullable', 'email'],
+        'address'          => ['nullable', 'string', 'max:500'],
+        'admission_number' => [
+            'required', 'string', 'max:50',
+            Rule::unique('students')
+                ->where('school_id', Auth::user()->school_id)
+                ->ignore($student->id),
+        ],
+        'photo'            => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
+        'remove_photo'     => ['nullable', 'boolean'],
+    ]);
+    $photoPath = $student->photo;
 
-        $student->update($request->only([
+    if ($request->boolean('remove_photo') && $student->photo) {
+        if (\Storage::disk('public')->exists($student->photo)) {
+            \Storage::disk('public')->delete($student->photo);
+        }
+        $photoPath = null;
+    }
+
+    if ($request->hasFile('photo')) {
+        // Delete old photo if exists
+        if ($student->photo && \Storage::disk('public')->exists($student->photo)) {
+            \Storage::disk('public')->delete($student->photo);
+        }
+        $photoPath = $request->file('photo')->store('student-photos', 'public');
+    }
+
+    // ── Update student ────────────────────────────────────────
+    $student->update(array_merge(
+        $request->only([
             'first_name', 'last_name', 'other_name', 'gender',
             'date_of_birth', 'guardian_name', 'guardian_phone',
             'guardian_email', 'address', 'admission_number',
-        ]));
+        ]),
+        ['photo' => $photoPath]
+    ));
 
-        return redirect()->route('admin.students.show', $student)
-            ->with('success', 'Student updated successfully.');
-    }
+    return redirect()->route('admin.students.show', $student)
+        ->with('success', 'Student updated successfully.');
+}
 
     // Assign student to a class for current session/term
     public function assignClass(Request $request, Student $student)

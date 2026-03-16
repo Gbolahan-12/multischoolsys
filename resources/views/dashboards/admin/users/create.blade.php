@@ -131,7 +131,7 @@
                             <div>
                                 <p class="fw-semibold mb-1 text-primary" style="font-size:14px;">Temporary Password</p>
                                 <p class="text-muted mb-0" style="font-size:13px;">
-                                    A random password will be generated and shown to you <strong>once</strong> after creation. Share it with the staff member so they can log in.
+                                    Register user with valid email and inform them to login with default password as <strong>"password".</strong>
                                 </p>
                             </div>
                         </div>

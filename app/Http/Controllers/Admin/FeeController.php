@@ -9,6 +9,7 @@ use App\Models\FeeType;
 use App\Models\SchoolClass;
 use App\Models\Term;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class FeeController extends Controller
@@ -16,28 +17,26 @@ class FeeController extends Controller
     public function index()
     {
         $currentSession = AcademicSession::current()->first();
-        $currentTerm    = Term::current()->first();
+        $currentTerm = Term::current()->first();
 
         $fees = Fee::with(['feeType', 'schoolClass.level', 'schoolClass.section', 'term', 'session'])
-            ->when($currentTerm, fn($q) => $q->where('term_id', $currentTerm->id))
+            ->when($currentTerm, fn ($q) => $q->where('term_id', $currentTerm->id))
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy(fn($f) => $f->feeType->name);
+            ->groupBy(fn ($f) => $f->feeType->name);
 
         $feeTypes = FeeType::orderBy('name')->get();
-        $classes  = SchoolClass::with(['level', 'section'])->orderBy('name')->get();
+        $classes = SchoolClass::with(['level', 'section'])->orderBy('name')->get();
         $sessions = AcademicSession::orderBy('name', 'desc')->get();
-        $terms    = $currentSession
+        $terms = $currentSession
             ? Term::where('session_id', $currentSession->id)->orderBy('name')->get()
             : collect();
 
         // Summary stats for current term
-        $totalFees        = Fee::when($currentTerm, fn($q) => $q->where('term_id', $currentTerm->id))->count();
-        $totalCollected   = \App\Models\Payment::when($currentTerm, fn($q) =>
-            $q->whereHas('fee', fn($q) => $q->where('term_id', $currentTerm->id))
+        $totalFees = Fee::when($currentTerm, fn ($q) => $q->where('term_id', $currentTerm->id))->count();
+        $totalCollected = \App\Models\Payment::when($currentTerm, fn ($q) => $q->whereHas('fee', fn ($q) => $q->where('term_id', $currentTerm->id))
         )->sum('amount_paid');
-        $totalOutstanding = \App\Models\Payment::when($currentTerm, fn($q) =>
-            $q->whereHas('fee', fn($q) => $q->where('term_id', $currentTerm->id))
+        $totalOutstanding = \App\Models\Payment::when($currentTerm, fn ($q) => $q->whereHas('fee', fn ($q) => $q->where('term_id', $currentTerm->id))
         )->sum('balance');
 
         return view('dashboards.admin.fee.index', compact(
@@ -53,19 +52,20 @@ class FeeController extends Controller
     {
         // dd($request->all());
 
-
-        $request->validate([
+        $validator = \Validator::make($request->all(), [
             'name' => [
                 'required', 'string', 'max:100',
-                Rule::unique('fee_types')->where('school_id', auth()->user()->school_id),
+                Rule::unique('fee_types')->where('school_id', Auth::user()->school_id),
             ],
-            'type'        => 'required|in:compulsory,defaulter',
-            'description' => ['nullable', 'string', 'max:255'],
+            'type' => 'required|in:compulsory,optional',
         ]);
 
+        // dd($validator->errors()->all());
+
         FeeType::create([
-            'school_id'   => auth()->user()->school_id,
-            'name'        => $request->name,
+            'school_id' => Auth::user()->school_id,
+            'name' => $request->name,
+            'type' => $request->type,
             'description' => $request->description,
         ]);
 
@@ -74,31 +74,33 @@ class FeeController extends Controller
 
     public function updateFeeType(Request $request, FeeType $feeType)
     {
-        abort_if($feeType->school_id !== auth()->user()->school_id, 403);
+        abort_if($feeType->school_id !== Auth::user()->school_id, 403);
 
         $request->validate([
             'name' => [
                 'required', 'string', 'max:100',
                 Rule::unique('fee_types')
-                    ->where('school_id', auth()->user()->school_id)
+                    ->where('school_id', Auth::user()->school_id)
                     ->ignore($feeType->id),
             ],
             'description' => ['nullable', 'string', 'max:255'],
         ]);
 
         $feeType->update(['name' => $request->name, 'description' => $request->description]);
+
         return back()->with('success', 'Fee type updated.');
     }
 
     public function destroyFeeType(FeeType $feeType)
     {
-        abort_if($feeType->school_id !== auth()->user()->school_id, 403);
+        abort_if($feeType->school_id !== Auth::user()->school_id, 403);
 
         if ($feeType->fees()->exists()) {
             return back()->with('error', 'Cannot delete a fee type that has fees attached to it.');
         }
 
         $feeType->delete();
+
         return back()->with('success', 'Fee type deleted.');
     }
 
@@ -109,11 +111,11 @@ class FeeController extends Controller
         // dd($request->all());
         $request->validate([
             'fee_type_id' => ['required', 'exists:fee_types,id'],
-            'session_id'  => ['required', 'exists:academic_sessions,id'],
-            'term_id'     => ['required', 'exists:terms,id'],
-            'class_id'    => ['nullable', 'exists:classes,id'],
-            'amount'      => ['required', 'numeric', 'min:1'],
-            
+            'session_id' => ['required', 'exists:academic_sessions,id'],
+            'term_id' => ['required', 'exists:terms,id'],
+            'class_id' => ['nullable', 'exists:classes,id'],
+            'amount' => ['required', 'numeric', 'min:1'],
+
             // 'description' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -128,12 +130,12 @@ class FeeController extends Controller
         }
 
         Fee::create([
-            'school_id'   => auth()->user()->school_id,
+            'school_id' => Auth::user()->school_id,
             'fee_type_id' => $request->fee_type_id,
-            'session_id'  => $request->session_id,
-            'term_id'     => $request->term_id,
-            'class_id'    => $request->class_id,
-            'amount'      => $request->amount,
+            'session_id' => $request->session_id,
+            'term_id' => $request->term_id,
+            'class_id' => $request->class_id,
+            'amount' => $request->amount,
             // 'description' => $request->description,
         ]);
 
@@ -142,33 +144,36 @@ class FeeController extends Controller
 
     public function update(Request $request, Fee $fee)
     {
-        abort_if($fee->school_id !== auth()->user()->school_id, 403);
+        abort_if($fee->school_id !== Auth::user()->school_id, 403);
 
         $request->validate([
-            'amount'      => ['required', 'numeric', 'min:1'],
-            'description' => ['nullable', 'string', 'max:255'],
+            'amount' => ['required', 'numeric', 'min:1'],
+            // 'description' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $fee->update(['amount' => $request->amount, 'description' => $request->description]);
+        $fee->update(['amount' => $request->amount]);
+
         return back()->with('success', 'Fee updated.');
     }
 
     public function destroy(Fee $fee)
     {
-        abort_if($fee->school_id !== auth()->user()->school_id, 403);
+        abort_if($fee->school_id !== Auth::user()->school_id, 403);
 
         if ($fee->payments()->exists()) {
             return back()->with('error', 'Cannot delete a fee that has payments recorded against it.');
         }
 
         $fee->delete();
+
         return back()->with('success', 'Fee deleted.');
     }
 
     // AJAX: get terms for a session
     public function termsBySession(AcademicSession $session)
     {
-        abort_if($session->school_id !== auth()->user()->school_id, 403);
+        abort_if($session->school_id !== Auth::user()->school_id, 403);
+
         return response()->json($session->terms()->orderBy('name')->get(['id', 'name']));
     }
 }

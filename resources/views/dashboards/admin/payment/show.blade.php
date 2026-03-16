@@ -19,13 +19,6 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <div class="row g-4">
 
             {{-- Left: Fee Status for current term --}}
@@ -102,7 +95,8 @@
                                         <tr>
                                             <td class="ps-4">
                                                 <div class="fw-semibold" style="font-size:14px;">
-                                                    {{ $payment->fee->feeType->name }}</div>
+                                                    {{ $payment->fee->feeType->name }}
+                                                </div>
                                                 <small class="text-muted">
                                                     {{ $payment->fee->term ? ucfirst($payment->fee->term->name) . ' Term' : '' }}
                                                     {{ $payment->fee->session?->name ? '— ' . $payment->fee->session->name : '' }}
@@ -126,16 +120,21 @@
                                             <td class="d-none d-md-table-cell text-muted" style="font-size:13px;">
                                                 {{ $payment->payment_date->format('d M Y') }}
                                                 @if($payment->recordedBy)
-                                                    <small class="d-block">by {{ $payment->recordedBy->name }}</small>
+                                                    <small class="d-block">by {{ $payment->recordedBy->fullname }}</small>
                                                 @endif
                                             </td>
                                             <td class="pe-4 text-end">
                                                 <form action="{{ route('admin.payments.destroy', $payment) }}" method="POST">
-                                                    @csrf @method('DELETE')
-                                                    <a href="#" type="submit"
-                                                        onclick="return confirm('Delete this payment record?')"><span
-                                                            class="icon"><i data-feather="trash"
-                                                                class="text-danger"></i></span></a>
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="submit"
+                                                        onclick="return confirm('Delete this payment record?')"
+                                                        class="btn btn-link p-0 border-0">
+                                                        <span class="icon">
+                                                            <i data-feather="trash" class="text-danger"></i>
+                                                        </span>
+                                                    </button>
 
                                                 </form>
                                             </td>

@@ -169,6 +169,11 @@ class User extends Authenticatable
     public static function generateStaffId(int $schoolId): string
     {
         $year = now()->year;
+        // $schoolId = Auth::user()->school_id;
+        $schoolName = Auth::user()->school->name;
+        // $schoolName = $schoolId->name;
+        $schoolCode = strtoupper(substr($schoolName, 0, 3));
+        // dd($schoolCode);
         $prefix = "STF-{$year}-";
 
         // Find the last staff ID for this school this year
@@ -180,7 +185,7 @@ class User extends Authenticatable
         $nextNumber = $last
             ? (int) substr($last, strlen($prefix)) + 1
             : 1;
-
-        return $prefix.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        return $schoolCode;
+        // return $prefix.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 }

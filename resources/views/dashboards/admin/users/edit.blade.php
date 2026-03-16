@@ -119,7 +119,7 @@
                 </div>
                 
             </div>
-            <div class="submit-bn d-flex align-center justify-content-center"> <button class="btn btn-primary border-0">Edit {{ $user->fullname }}</button> </div>
+            <div class="submit-bn d-flex align-center justify-content-center"> <button class="btn btn-primary border-0">Save {{ $user->fullname }}</button> </div>
         </div>
     </form>
 

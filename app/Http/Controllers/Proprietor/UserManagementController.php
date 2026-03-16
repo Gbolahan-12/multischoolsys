@@ -48,6 +48,8 @@ class UserManagementController extends Controller
      */
     public function store(Request $request)
     {
+        // dd(User::generateStaffId(Auth::user()->school_id));
+        // dd($request->all());
         $request->validate([
             'fullname' => ['required', 'string', 'max:255'],
             'email' => [

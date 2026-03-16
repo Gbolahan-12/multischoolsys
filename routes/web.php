@@ -18,7 +18,6 @@ use App\Http\Controllers\Proprietor\SessionTermController;
 use App\Http\Controllers\Proprietor\UserManagementController;
 use App\Http\Controllers\SchoolResultController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
-use App\Http\Controllers\Staff\ResultController;
 use App\Http\Controllers\StaffDashboard;
 use App\Http\Controllers\SuperAdmin\SchoolsController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
@@ -49,9 +48,7 @@ Route::middleware(['auth', 'role:super-admin'])->group(function () {
     Route::put('/super-admin/profile', [ProfileController::class, 'update'])->name('superadmin.profile.update');
 });
 
-
-
-Route::middleware(['auth', 'verified','school.active', 'role:admin,proprietor'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'school.active', 'role:admin,proprietor'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/classlist', [SchoolClassController::class, 'classlistView'])->name('class-list');
     Route::post('/classlist', [SchoolClassController::class, 'storeClass'])->name('class-store');
@@ -68,7 +65,7 @@ Route::middleware(['auth', 'verified','school.active', 'role:admin,proprietor'])
     Route::get('/payments', [SchoolPaymentController::class, 'allPayments'])->name('admin.payment.list');
     Route::get('/complete-payments', [SchoolPaymentController::class, 'completePayments'])->name('admin.complete.payments');
     Route::get('/defaulters', [AdminDashboard::class, 'defaulters'])->name('defaulters');
-    
+
     Route::get('/users', [AdminDashboardController::class, 'staffList'])->name('users.index');
     Route::get('/users/create', [AdminDashboardController::class, 'staffCreate'])->name('users.create');
     Route::post('/users', [AdminDashboardController::class, 'staffStore'])->name('users.store');
@@ -94,10 +91,7 @@ Route::middleware(['auth', 'verified','school.active', 'role:admin,proprietor'])
 
 });
 
-
-
-
-Route::middleware(['auth','verified','school.active', 'role:admin,proprietor'])->prefix('school')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'school.active', 'role:admin,proprietor'])->prefix('school')->name('admin.')->group(function () {
 
     Route::get('/classes', [ClassController::class, 'index'])->name('classes.index');
     Route::post('/classes', [ClassController::class, 'store'])->name('classes.store');
@@ -162,7 +156,7 @@ Route::middleware(['auth','verified','school.active', 'role:admin,proprietor'])-
     Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
 });
 
-Route::middleware(['auth', 'verified','school.active', 'role:staff,admin'])->prefix('staff')->name('staff.')->group(function () {
+Route::middleware(['auth', 'verified', 'school.active', 'role:staff,admin'])->prefix('staff')->name('staff.')->group(function () {
     Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
     Route::get('/my-uploaded-results', [StaffDashboard::class, 'myUploadedResults'])->name('staff.my.uploaded.results');
     Route::get('/results', [SchoolResultController::class, 'index'])->name('results.index');
@@ -189,7 +183,7 @@ Route::middleware(['auth', 'permission:manage schools'])->prefix('super-admin')-
         Route::post('/{school}/ban', [SchoolsController::class, 'ban'])->name('ban');
         Route::post('/{school}/reactivate', [SchoolsController::class, 'reactivate'])->name('reactivate');
     });
-    Route::prefix('subscription')->name('subscriptions.')->group(function(){
+    Route::prefix('subscription')->name('subscriptions.')->group(function () {
         Route::get('/', [SubscriptionController::class, 'index'])->name('index');
         Route::get('/create', [SubscriptionController::class, 'create'])->name('create');
         Route::post('/', [SubscriptionController::class, 'store'])->name('store');
