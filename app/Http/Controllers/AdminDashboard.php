@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicSession;
+use App\Models\Fee;
 use App\Models\Payment;
 use App\Models\School;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\Term;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -183,15 +186,74 @@ class AdminDashboard extends Controller
         return view('dashboards.admin.payment.complete');
     }
 
-    public function defaulters()
+    public function defaulters(Request $request)
     {
-        $defaultersPayments = Payment::with(['student', 'fee'])
-            ->whereHas('fee', function ($query) {
-                $query->where('type', 'defaulter');
-            })
-            ->get();
+        $schoolId = Auth::user()->school_id;
+        $currentSession = AcademicSession::current()->first();
+        $currentTerm = Term::current()->first();
 
-        return view('dashboards.admin.payment.defaulters', compact('defaultersPayments'));
+        // ── Filter options ────────────────────────────────────────
+        $sessions = AcademicSession::where('school_id', $schoolId)
+            ->orderByDesc('created_at')->get();
+        $selectedSessionId = $request->session_id ?? $currentSession?->id;
+
+        $terms = collect();
+        if ($selectedSessionId) {
+            $terms = Term::where('school_id', $schoolId)
+                ->where('session_id', $selectedSessionId)
+                ->orderByRaw("FIELD(name, 'first', 'second', 'third')")
+                ->get();
+        }
+
+        $selectedTermId = $request->term_id ?? $currentTerm?->id;
+
+        // ── Optional fees for selected term ───────────────────────
+        $fees = collect();
+        if ($selectedTermId) {
+            $fees = Fee::with('feeType')
+                ->where('school_id', $schoolId)
+                ->where('term_id', $selectedTermId)
+                ->whereHas('feeType', fn ($q) => $q->where('type', 'optional'))
+                ->get();
+        }
+
+        $selectedFeeId = $request->fee_id;
+
+        // ── Payments query ────────────────────────────────────────
+        $payments = collect();
+        $summary = null;
+
+        if ($selectedTermId) {
+            $query = Payment::with(['student', 'fee.feeType', 'fee.schoolClass', 'receivedBy'])
+                ->where('school_id', $schoolId)
+                ->whereHas('fee', fn ($q) => $q
+                    ->where('term_id', $selectedTermId)
+                    ->whereHas('feeType', fn ($fq) => $fq->where('type', 'optional'))
+                )
+                ->when($selectedFeeId, fn ($q) => $q->where('fee_id', $selectedFeeId))
+                ->when($request->status, fn ($q) => $q->where('status', $request->status))
+                ->when($request->search, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('first_name', 'like', "%{$request->search}%")
+                    ->orWhere('last_name', 'like', "%{$request->search}%")
+                    ->orWhere('admission_number', 'like', "%{$request->search}%")
+                ))
+                ->orderByDesc('payment_date');
+
+            $all = (clone $query)->get();
+            $summary = [
+                'total' => $all->count(),
+                'paid' => $all->where('status', 'paid')->count(),
+                'partial' => $all->where('status', 'partial')->count(),
+                'owing' => $all->where('status', 'owing')->count(),
+                'total_amount' => $all->sum('amount_paid'),
+            ];
+
+            $payments = $query->paginate(20)->withQueryString();
+        }
+
+        return view('dashboards.admin.payment.defaulters', compact(
+            'sessions', 'terms', 'fees', 'payments', 'summary',
+            'selectedSessionId', 'selectedTermId', 'selectedFeeId',
+        ));
     }
 
     public function storeStudent(Request $request)

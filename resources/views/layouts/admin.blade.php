@@ -17,13 +17,11 @@
     <link rel="stylesheet" href="{{ asset('admin-assets/fonts/feather-font/css/iconfont.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/vendors/flag-icon-css/css/flag-icon.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/demo_1/style.css') }}">
-
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
 
-    <link rel="shortcut icon" href="{{ asset('admin-assets/images/favicon.png') }}">
+        <link rel="shortcut icon" href="{{asset('admin-assets/images/logo/multischoollogo.jpeg')}}" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 
@@ -53,8 +51,8 @@
 
     {{-- Plugin JS --}}
     <script src="{{ asset('admin-assets/vendors/feather-icons/feather.min.js') }}"></script>
-    <script src="{{ asset('admin-assets/vendors/select2/select2.min.js') }}"></script>
-    <script src="{{ asset('admin-assets/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script>
+    {{-- <script src="{{ asset('admin-assets/vendors/select2/select2.min.js') }}"></script> --}}
+    {{-- <script src="{{ asset('admin-assets/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script> --}}
 
     <script src="{{ asset('admin-assets/js/template.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"

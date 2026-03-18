@@ -4,48 +4,75 @@ namespace App\Http\Controllers\Proprietor;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
+use App\Models\Fee;
 use App\Models\Payment;
 use App\Models\Student;
 use App\Models\Term;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $schoolId      = Auth::user()->school_id;
-        // $currentSession = AcademicSession::current()->with('currentTerm')->first();
+        $schoolId       = Auth::user()->school_id;
         $currentSession = AcademicSession::current()->first();
         $currentTerm    = Term::current()->first();
 
-        // ── Snapshot Stats ──────────────────────────────────────
-        $totalStudents  = Student::where('school_id', $schoolId)->where('is_active', true)->count();
-        $totalStaff     = User::where('school_id', $schoolId)->where('role', 'staff')->where('is_active', true)->count();
-        $totalAdmins    = User::where('school_id', $schoolId)->where('role', 'admin')->where('is_active', true)->count();
+        // ── Snapshot Stats ────────────────────────────────────────
+        $totalStudents = Student::where('school_id', $schoolId)->where('is_active', true)->count();
+        $totalStaff    = User::where('school_id', $schoolId)->whereIn('role', ['admin', 'staff', 'school-user'])->where('is_active', true)->count();
+        $totalAdmins   = User::where('school_id', $schoolId)->where('role', 'admin')->where('is_active', true)->count();
 
-        // Payments for current term
-        $termPayments   = Payment::where('school_id', $schoolId)
-            ->when($currentTerm, fn($q) => $q->whereIn('fee_id', function($sub) use ($currentTerm) {
-                $sub->select('id')->from('fees')->where('term_id', $currentTerm->id);
-            }))
+        // ── Compulsory fee IDs for current term ───────────────────
+        $compulsoryFeeIds = $currentTerm
+            ? Fee::where('school_id', $schoolId)
+                ->where('term_id', $currentTerm->id)
+                ->whereHas('feeType', fn($q) => $q->where('type', 'compulsory'))
+                ->pluck('id')
+            : collect();
+
+        // ── Payments collected & outstanding (compulsory only) ────
+        $termPayments = Payment::where('school_id', $schoolId)
+            ->when($compulsoryFeeIds->isNotEmpty(), fn($q) => $q->whereIn('fee_id', $compulsoryFeeIds))
             ->selectRaw('SUM(amount_paid) as collected, SUM(balance) as outstanding')
             ->first();
 
-        $collected    = $termPayments->collected ?? 0;
-        $outstanding  = $termPayments->outstanding ?? 0;
+        $collected   = $termPayments->collected   ?? 0;
+        $outstanding = $termPayments->outstanding ?? 0;
 
-        // Students owing in current term
-        $studentsOwing = Payment::where('school_id', $schoolId)
-            ->whereIn('status', ['owing', 'partial'])
-            ->when($currentTerm, fn($q) => $q->whereIn('fee_id', function($sub) use ($currentTerm) {
-                $sub->select('id')->from('fees')->where('term_id', $currentTerm->id);
-            }))
-            ->distinct('student_id')
-            ->count('student_id');
+        // ── Students owing (compulsory fees only) ─────────────────
+        // Owing = students with partial/owing payment OR no payment at all
+        $studentsOwing = 0;
 
-        // ── Payment Growth (last 6 months) ──────────────────────
+        if ($currentTerm && $compulsoryFeeIds->isNotEmpty()) {
+
+            // Students who have made at least one payment (any status) for a compulsory fee
+            $studentsThatPaid = Payment::where('school_id', $schoolId)
+                ->whereIn('fee_id', $compulsoryFeeIds)
+                ->pluck('student_id')
+                ->unique();
+
+            // Students with partial or still-owing payment records
+            $partialStudentIds = Payment::where('school_id', $schoolId)
+                ->whereIn('fee_id', $compulsoryFeeIds)
+                ->whereIn('status', ['partial', 'owing'])
+                ->pluck('student_id')
+                ->unique();
+
+            // Active students who have NO payment record at all for compulsory fees
+            $noPaymentStudentIds = Student::where('school_id', $schoolId)
+                ->where('is_active', true)
+                ->whereNotIn('id', $studentsThatPaid)
+                ->pluck('id');
+
+            $studentsOwing = $partialStudentIds
+                ->merge($noPaymentStudentIds)
+                ->unique()
+                ->count();
+        }
+
+        // ── Payment Growth (last 6 months) ────────────────────────
         $paymentGrowth = Payment::where('school_id', $schoolId)
             ->where('payment_date', '>=', now()->subMonths(6)->startOfMonth())
             ->selectRaw("DATE_FORMAT(payment_date, '%b %Y') as month, MONTH(payment_date) as month_num, YEAR(payment_date) as year, SUM(amount_paid) as total")
@@ -53,7 +80,7 @@ class DashboardController extends Controller
             ->orderByRaw('year ASC, month_num ASC')
             ->get();
 
-        // ── Student Growth (last 6 months by admission) ─────────
+        // ── Student Growth (last 6 months by admission) ───────────
         $studentGrowth = Student::where('school_id', $schoolId)
             ->where('created_at', '>=', now()->subMonths(6)->startOfMonth())
             ->selectRaw("DATE_FORMAT(created_at, '%b %Y') as month, MONTH(created_at) as month_num, YEAR(created_at) as year, COUNT(*) as total")
@@ -61,16 +88,32 @@ class DashboardController extends Controller
             ->orderByRaw('year ASC, month_num ASC')
             ->get();
 
-        // ── Payment Status Breakdown (current term) ─────────────
+        // ── Payment Status Breakdown (compulsory fees only) ───────
         $paymentBreakdown = Payment::where('school_id', $schoolId)
-            ->when($currentTerm, fn($q) => $q->whereIn('fee_id', function($sub) use ($currentTerm) {
-                $sub->select('id')->from('fees')->where('term_id', $currentTerm->id);
-            }))
+            ->when($compulsoryFeeIds->isNotEmpty(), fn($q) => $q->whereIn('fee_id', $compulsoryFeeIds))
             ->selectRaw("status, COUNT(DISTINCT student_id) as count")
             ->groupBy('status')
             ->pluck('count', 'status');
 
-        // ── Recent Payments ─────────────────────────────────
+        // Add students with no payment to the 'owing' bucket in breakdown
+        $noPaymentCount = $currentTerm && $compulsoryFeeIds->isNotEmpty()
+            ? Student::where('school_id', $schoolId)
+                ->where('is_active', true)
+                ->whereNotIn('id',
+                    Payment::where('school_id', $schoolId)
+                        ->whereIn('fee_id', $compulsoryFeeIds)
+                        ->pluck('student_id')
+                )
+                ->count()
+            : 0;
+
+        if ($noPaymentCount > 0) {
+            $paymentBreakdown = $paymentBreakdown->toArray();
+            $paymentBreakdown['owing'] = ($paymentBreakdown['owing'] ?? 0) + $noPaymentCount;
+            $paymentBreakdown = collect($paymentBreakdown);
+        }
+
+        // ── Recent Payments ───────────────────────────────────────
         $recentPayments = Payment::where('school_id', $schoolId)
             ->with(['student', 'fee.feeType'])
             ->latest('payment_date')

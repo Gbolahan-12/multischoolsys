@@ -24,10 +24,10 @@
 	<!-- endinject -->
 	<!-- Layout styles -->
 	<link rel="stylesheet" href="{{ asset('admin-assets/css/demo_1/style.css') }} ">
-	@vite(['resources/css/app.css', 'resources/js/app.js'])
+	@vite(['resources/css/app.css', 'resources/scss/app.scss', 'resources/js/app.js'])
 
 	<!-- End layout styles -->
-	<link rel="shortcut icon" href=" {{ asset('admin-assets/images/favicon.png') }} " />
+	    <link rel="shortcut icon" href="{{asset('admin-assets/images/logo/multischoollogo.jpeg')}}" />
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 

@@ -1,11 +1,11 @@
-@extends('layouts.staff')
+@extends('layouts.admin')
 @section('title', 'Upload Results')
 @section('content')
 <div class="container-fluid px-4">
 
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="fw-bold mb-0">Result Uploads</h4>
+            <h4 class="fw-bold mb-0">Result Upload</h4>
             <small class="text-muted">
                 @if($currentSession && $currentTerm)
                     {{ $currentSession->name }} &mdash; {{ ucfirst($currentTerm->name) }} Term
@@ -33,10 +33,10 @@
                 </div>
                 <div class="card-body p-4">
                     {{-- GET form submits to uploadForm which then loads the upload page --}}
-                    <form action="{{ route('staff.results.upload.form') }}" method="GET">
+                    <form action="{{ route('admin.results.upload.form') }}" method="GET">
                         <div class="mb-3">
                             <label class="form-label fw-medium">Class <span class="text-danger">*</span></label>
-                            <select name="class_id" class="form-select" required>
+                            <select name="class_id" class="form-control" required>
                                 <option value="">-- Select Class --</option>
                                 @foreach($classes as $class)
                                 <option value="{{ $class->id }}">{{ $class->full_name }}</option>
@@ -45,7 +45,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="form-label fw-medium">Subject <span class="text-danger">*</span></label>
-                            <select name="subject_id" class="form-select" required>
+                            <select name="subject_id" class="form-control" required>
                                 <option value="">-- Select Subject --</option>
                                 @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}">{{ $subject->name }}</option>

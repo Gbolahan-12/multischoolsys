@@ -1,14 +1,14 @@
 <nav class="sidebar">
   <div class="sidebar-header">
-    <a href="{{ route('superadmin.dashboard') }}" class="sidebar-brand">
-      MultiSchool<span>Sys</span>
-    </a>
+    <a href="{{ route('superadmin.dashboard') }}" class="sidebar-brand"> <img
+        src="{{ asset('admin-assets/images/logo/minilogo-removebg-preview.png') }}" width="110px" height="110px"
+        alt=""> </a>
 
-    <div class="sidebar-toggler not-active">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+      <div class="sidebar-toggler not-active">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
   </div>
 
   <div class="sidebar-body">

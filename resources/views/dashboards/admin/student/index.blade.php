@@ -82,25 +82,16 @@
                                 <tr>
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center gap-2">
-                                            {{-- <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0
-                                                {{ $student->gender === 'male' ? 'bg-primary' : 'bg-pink' }} bg-opacity-10
-                                                {{ $student->gender === 'male' ? 'text-primary' : 'text-danger' }}"
-                                                style="width:36px;height:36px;font-size:13px;">
-                                                {{ strtoupper(substr($student->first_name, 0, 1)) }}
-                                            </div> --}}
-                                            {{-- <img src="{{ asset($user->profile?->avatar ?? 'profile-images/default-avatar.jpg') }}"
-                                                class="rounded-circle" style="width:36px;height:36px;object-fit:cover;"> --}}
-
-                                                @if($student->photo)
-    <img src="{{ asset('storage/' . $student->photo) }}"
-         class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
-@else
-    <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold
-                d-flex align-items-center justify-content-center flex-shrink-0"
-         style="width:36px;height:36px;font-size:14px;">
-        {{ strtoupper(substr($student->first_name, 0, 1)) }}
-    </div>
-@endif
+                                    @if($student->photo)
+                                        <img src="{{ asset('storage/' . $student->photo) }}"
+                                            class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                                    @else
+                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold
+                                                    d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="width:36px;height:36px;font-size:14px;">
+                                            {{ strtoupper(substr($student->first_name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                             <div>
                                                 <div class="fw-semibold" style="font-size:14px;">{{ $student->short_name }}
                                                 </div>

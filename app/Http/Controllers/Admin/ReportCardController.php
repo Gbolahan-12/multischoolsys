@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicSession;
+use App\Models\ClassSubjectAssignment;
 use App\Models\Result;
 use App\Models\SchoolClass;
 use App\Models\Student;
@@ -15,21 +16,33 @@ use Illuminate\Support\Facades\Auth;
 class ReportCardController extends Controller
 {
     public function index()
-    {
-        $schoolId = Auth::user()->school_id;
+{
+    $schoolId = Auth::user()->school_id;
+    $staff    = Auth::user();
 
-        $sessions = AcademicSession::where('school_id', $schoolId)
-            ->orderByDesc('created_at')->get();
+    $sessions = AcademicSession::where('school_id', $schoolId)
+        ->orderByDesc('created_at')->get();
 
-        $classes = SchoolClass::where('school_id', $schoolId)
-            ->orderBy('name')->get();
+    $currentSession = AcademicSession::current()->first();
+    $currentTerm    = Term::where('school_id', $schoolId)
+        ->where('is_current', true)
+        ->with('session')->first();
 
-        $currentTerm = Term::where('school_id', $schoolId)
-            ->where('is_current', true)
-            ->with('session')->first();
+    // Only classes where this teacher has been assigned a subject
+    $assignedClassIds = ClassSubjectAssignment::where('teacher_id', $staff->id)
+        ->when($currentSession, fn($q) => $q->where('session_id', $currentSession->id))
+        ->pluck('class_id')
+        ->unique();
 
-        return view('dashboards.staff.report-cards.index', compact('sessions', 'classes', 'currentTerm'));
-    }
+    $classes = SchoolClass::where('school_id', $schoolId)
+        ->whereIn('id', $assignedClassIds)
+        ->orderBy('name')
+        ->get();
+
+    return view('dashboards.staff.report-cards.index', compact(
+        'sessions', 'classes', 'currentTerm'
+    ));
+}
 
     public function preview(Request $request)
     {

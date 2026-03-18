@@ -319,195 +319,193 @@ class PaymentController extends Controller
     }
 
     public function indexDefaulter(Request $request)
-{
-    $schoolId      = Auth::user()->school_id;
-    $currentTerm   = Term::current()->first();
-    $currentSession = AcademicSession::current()->first();
+    {
+        $schoolId = Auth::user()->school_id;
+        $currentTerm = Term::current()->first();
+        $currentSession = AcademicSession::current()->first();
 
-    // ── Filter options ────────────────────────────────────────
-    $sessions = AcademicSession::where('school_id', $schoolId)
-        ->orderByDesc('created_at')->get();
+        $sessions = AcademicSession::where('school_id', $schoolId)
+            ->orderByDesc('created_at')->get();
 
-    $selectedSessionId = $request->session_id ?? $currentSession?->id;
+        $selectedSessionId = $request->session_id ?? $currentSession?->id;
 
-    $terms = collect();
-    if ($selectedSessionId) {
-        $terms = Term::where('school_id', $schoolId)
-            ->where('session_id', $selectedSessionId)
-            ->orderByRaw("FIELD(name, 'first', 'second', 'third')")
-            ->get();
-    }
+        $terms = collect();
+        if ($selectedSessionId) {
+            $terms = Term::where('school_id', $schoolId)
+                ->where('session_id', $selectedSessionId)
+                ->orderByRaw("FIELD(name, 'first', 'second', 'third')")
+                ->get();
+        }
 
-    $selectedTermId = $request->term_id ?? $currentTerm?->id;
+        $selectedTermId = $request->term_id ?? $currentTerm?->id;
 
-    // Only defaulter fees for selected term
-    $fees = collect();
-    if ($selectedTermId) {
-        $fees = Fee::with('feeType')
-            ->where('school_id', $schoolId)
-            ->where('term_id', $selectedTermId)
-            ->where('type', 'defaulter') // ← only defaulter fees
-            ->get();
-    }
-
-    $selectedFeeId = $request->fee_id;
-
-    // ── Build payments query ──────────────────────────────────
-    $payments = collect();
-    $summary  = null;
-
-    if ($selectedTermId) {
-        $query = Payment::with(['student', 'fee.feeType', 'fee.schoolClass', 'receivedBy'])
-            ->where('school_id', $schoolId)
-            ->whereHas('fee', fn($q) => $q
+        // Only defaulter fees for selected term
+        $fees = collect();
+        if ($selectedTermId) {
+            $fees = Fee::with('feeType')
+                ->where('school_id', $schoolId)
                 ->where('term_id', $selectedTermId)
-                ->where('type', 'defaulter') // ← only defaulter fees
-            )
-            ->when($selectedFeeId, fn($q) => $q->where('fee_id', $selectedFeeId))
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->search, fn($q) => $q->whereHas('student', fn($sq) =>
-                $sq->where('first_name', 'like', "%{$request->search}%")
-                   ->orWhere('last_name',  'like', "%{$request->search}%")
-                   ->orWhere('admission_number', 'like', "%{$request->search}%")
-            ))
-            ->orderByDesc('payment_date');
+                ->where('type', 'optional')
+                ->get();
+        }
 
-        // Summary stats
-        $all = (clone $query)->get();
-        $summary = [
-            'total'       => $all->count(),
-            'paid'        => $all->where('status', 'paid')->count(),
-            'partial'     => $all->where('status', 'partial')->count(),
-            'owing'       => $all->where('status', 'owing')->count(),
-            'total_amount'=> $all->sum('amount_paid'),
-        ];
+        $selectedFeeId = $request->fee_id;
 
-        $payments = $query->paginate(20)->withQueryString();
+        // ── Build payments query ──────────────────────────────────
+        $payments = collect();
+        $summary = null;
+
+        if ($selectedTermId) {
+            $query = Payment::with(['student', 'fee.feeType', 'fee.schoolClass', 'receivedBy'])
+                ->where('school_id', $schoolId)
+                ->whereHas('fee', fn ($q) => $q
+                    ->where('term_id', $selectedTermId)
+                    ->where('type', 'defaulter') // ← only defaulter fees
+                )
+                ->when($selectedFeeId, fn ($q) => $q->where('fee_id', $selectedFeeId))
+                ->when($request->status, fn ($q) => $q->where('status', $request->status))
+                ->when($request->search, fn ($q) => $q->whereHas('student', fn ($sq) => $sq->where('first_name', 'like', "%{$request->search}%")
+                    ->orWhere('last_name', 'like', "%{$request->search}%")
+                    ->orWhere('admission_number', 'like', "%{$request->search}%")
+                ))
+                ->orderByDesc('payment_date');
+
+            // Summary stats
+            $all = (clone $query)->get();
+            $summary = [
+                'total' => $all->count(),
+                'paid' => $all->where('status', 'paid')->count(),
+                'partial' => $all->where('status', 'partial')->count(),
+                'owing' => $all->where('status', 'owing')->count(),
+                'total_amount' => $all->sum('amount_paid'),
+            ];
+
+            $payments = $query->paginate(20)->withQueryString();
+        }
+
+        return view('dashboards.admin.payment.defaulters', compact(
+            'sessions', 'terms', 'fees', 'payments', 'summary',
+            'selectedSessionId', 'selectedTermId', 'selectedFeeId',
+        ));
     }
 
-    return view('dashboards.admin.payment.defaulters', compact(
-        'sessions', 'terms', 'fees', 'payments', 'summary',
-        'selectedSessionId', 'selectedTermId', 'selectedFeeId',
-    ));
-}
+    // ────────────────────────────────────────────────────────────────
+    // CREATE — Form to record a defaulter payment
+    // ────────────────────────────────────────────────────────────────
+    public function createDefaulter(Request $request)
+    {
+        $currentSession = AcademicSession::current()->first();
+        $currentTerm = Term::current()->first();
 
-// ────────────────────────────────────────────────────────────────
-// CREATE — Form to record a defaulter payment
-// ────────────────────────────────────────────────────────────────
-public function createDefaulter(Request $request)
-{
-    $currentSession = AcademicSession::current()->first();
-    $currentTerm    = Term::current()->first();
+        $students = Student::active()->orderBy('first_name')->get();
 
-    $students = Student::active()->orderBy('first_name')->get();
+        // Only defaulter fees for current term
+        $fees = Fee::with(['feeType', 'schoolClass'])
+            ->where('type', 'defaulter') // ← only defaulter fees
+            ->when($currentTerm, fn ($q) => $q->where('term_id', $currentTerm->id))
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    // Only defaulter fees for current term
-    $fees = Fee::with(['feeType', 'schoolClass'])
-        ->where('type', 'defaulter') // ← only defaulter fees
-        ->when($currentTerm, fn($q) => $q->where('term_id', $currentTerm->id))
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $student = $request->student_id
+            ? Student::find($request->student_id)
+            : null;
 
-    $student = $request->student_id
-        ? Student::find($request->student_id)
-        : null;
-
-    return view('dashboards.admin.payment.defaulter-create', compact(
-        'fees', 'students', 'student', 'currentSession', 'currentTerm'
-    ));
-}
-
-// ────────────────────────────────────────────────────────────────
-// STORE — Record a defaulter payment (reuses same store logic)
-// ────────────────────────────────────────────────────────────────
-public function storeDefaulter(Request $request)
-{
-    $request->validate([
-        'student_id'     => ['required', 'exists:students,id'],
-        'fee_id'         => ['required', 'exists:fees,id'],
-        'amount_paid'    => ['required', 'numeric', 'min:1'],
-        'payment_date'   => ['required', 'date'],
-        'payment_method' => ['required', Rule::in(['cash', 'transfer', 'pos', 'cheque'])],
-        'reference'      => ['nullable', 'string', 'max:100'],
-        'note'           => ['nullable', 'string', 'max:255'],
-    ]);
-
-    $fee     = Fee::findOrFail($request->fee_id);
-    $student = Student::findOrFail($request->student_id);
-
-    abort_if($fee->school_id    !== Auth::user()->school_id, 403);
-    abort_if($student->school_id !== Auth::user()->school_id, 403);
-
-    // Ensure the fee is actually a defaulter fee
-    abort_if($fee->type !== 'defaulter', 403, 'This fee is not a defaulter fee.');
-
-    $existing       = Payment::where('student_id', $student->id)->where('fee_id', $fee->id)->first();
-    $previouslyPaid = $existing?->amount_paid ?? 0;
-    $totalPaid      = $previouslyPaid + $request->amount_paid;
-    $balance        = max(0, $fee->amount - $totalPaid);
-
-    $status = match(true) {
-        $totalPaid >= $fee->amount => 'paid',
-        $totalPaid > 0             => 'partial',
-        default                    => 'owing',
-    };
-
-    if ($existing) {
-        $existing->update([
-            'amount_paid'    => $totalPaid,
-            'balance'        => $balance,
-            'status'         => $status,
-            'payment_date'   => $request->payment_date,
-            'payment_method' => $request->payment_method,
-            'reference'      => $request->reference,
-            'note'           => $request->note,
-            'received_by'    => Auth::id(),
-        ]);
-    } else {
-        Payment::create([
-            'school_id'      => Auth::user()->school_id,
-            'student_id'     => $student->id,
-            'fee_id'         => $fee->id,
-            'amount_paid'    => $request->amount_paid,
-            'balance'        => $balance,
-            'status'         => $status,
-            'payment_date'   => $request->payment_date,
-            'payment_method' => $request->payment_method,
-            'reference'      => $request->reference,
-            'note'           => $request->note,
-            'received_by'    => Auth::id(),
-        ]);
+        return view('dashboards.admin.payment.defaulter-create', compact(
+            'fees', 'students', 'student', 'currentSession', 'currentTerm'
+        ));
     }
 
-    return redirect()->route('admin.payments.defaulter.index')
-        ->with('success', "Defaulter payment of ₦" . number_format($request->amount_paid, 0) . " recorded for {$student->first_name} {$student->last_name}.");
-}
-
-// ── AJAX — terms by session (reuse same pattern) ──────────────
-// public function termsBySession(Request $request)
-// {
-//     $terms = Term::where('school_id', Auth::user()->school_id)
-//         ->where('session_id', $request->session_id)
-//         ->orderByRaw("FIELD(name, 'first', 'second', 'third')")
-//         ->get(['id', 'name', 'is_current']);
-
-//     return response()->json($terms);
-// }
-
-// ── AJAX — defaulter fees by term ─────────────────────────────
-public function defaulterFeesByTerm(Request $request)
-{
-    $fees = Fee::with('feeType')
-        ->where('school_id', Auth::user()->school_id)
-        ->where('term_id', $request->term_id)
-        ->where('type', 'defaulter')
-        ->get()
-        ->map(fn($fee) => [
-            'id'   => $fee->id,
-            'name' => $fee->feeType->name . ' — ₦' . number_format($fee->amount, 2)
-                      . ($fee->schoolClass ? ' (' . $fee->schoolClass->name . ')' : ' (All Classes)'),
+    // ────────────────────────────────────────────────────────────────
+    // STORE — Record a defaulter payment (reuses same store logic)
+    // ────────────────────────────────────────────────────────────────
+    public function storeDefaulter(Request $request)
+    {
+        $request->validate([
+            'student_id' => ['required', 'exists:students,id'],
+            'fee_id' => ['required', 'exists:fees,id'],
+            'amount_paid' => ['required', 'numeric', 'min:1'],
+            'payment_date' => ['required', 'date'],
+            'payment_method' => ['required', Rule::in(['cash', 'transfer', 'pos', 'cheque'])],
+            'reference' => ['nullable', 'string', 'max:100'],
+            'note' => ['nullable', 'string', 'max:255'],
         ]);
 
-    return response()->json($fees);
-}
+        $fee = Fee::findOrFail($request->fee_id);
+        $student = Student::findOrFail($request->student_id);
+
+        abort_if($fee->school_id !== Auth::user()->school_id, 403);
+        abort_if($student->school_id !== Auth::user()->school_id, 403);
+
+        // Ensure the fee is actually a defaulter fee
+        abort_if($fee->type !== 'defaulter', 403, 'This fee is not a defaulter fee.');
+
+        $existing = Payment::where('student_id', $student->id)->where('fee_id', $fee->id)->first();
+        $previouslyPaid = $existing?->amount_paid ?? 0;
+        $totalPaid = $previouslyPaid + $request->amount_paid;
+        $balance = max(0, $fee->amount - $totalPaid);
+
+        $status = match (true) {
+            $totalPaid >= $fee->amount => 'paid',
+            $totalPaid > 0 => 'partial',
+            default => 'owing',
+        };
+
+        if ($existing) {
+            $existing->update([
+                'amount_paid' => $totalPaid,
+                'balance' => $balance,
+                'status' => $status,
+                'payment_date' => $request->payment_date,
+                'payment_method' => $request->payment_method,
+                'reference' => $request->reference,
+                'note' => $request->note,
+                'received_by' => Auth::id(),
+            ]);
+        } else {
+            Payment::create([
+                'school_id' => Auth::user()->school_id,
+                'student_id' => $student->id,
+                'fee_id' => $fee->id,
+                'amount_paid' => $request->amount_paid,
+                'balance' => $balance,
+                'status' => $status,
+                'payment_date' => $request->payment_date,
+                'payment_method' => $request->payment_method,
+                'reference' => $request->reference,
+                'note' => $request->note,
+                'received_by' => Auth::id(),
+            ]);
+        }
+
+        return redirect()->route('admin.payments.defaulter.index')
+            ->with('success', 'Defaulter payment of ₦'.number_format($request->amount_paid, 0)." recorded for {$student->first_name} {$student->last_name}.");
+    }
+
+    // ── AJAX — terms by session (reuse same pattern) ──────────────
+    // public function termsBySession(Request $request)
+    // {
+    //     $terms = Term::where('school_id', Auth::user()->school_id)
+    //         ->where('session_id', $request->session_id)
+    //         ->orderByRaw("FIELD(name, 'first', 'second', 'third')")
+    //         ->get(['id', 'name', 'is_current']);
+
+    //     return response()->json($terms);
+    // }
+
+    // ── AJAX — defaulter fees by term ─────────────────────────────
+    public function defaulterFeesByTerm(Request $request)
+    {
+        $fees = Fee::with('feeType')
+            ->where('school_id', Auth::user()->school_id)
+            ->where('term_id', $request->term_id)
+            ->where('type', 'defaulter')
+            ->get()
+            ->map(fn ($fee) => [
+                'id' => $fee->id,
+                'name' => $fee->feeType->name.' — ₦'.number_format($fee->amount, 2)
+                          .($fee->schoolClass ? ' ('.$fee->schoolClass->name.')' : ' (All Classes)'),
+            ]);
+
+        return response()->json($fees);
+    }
 }

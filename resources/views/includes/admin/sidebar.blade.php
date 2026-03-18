@@ -2,7 +2,9 @@
   <div class="sidebar-header">
     <a @if (auth()->user()->role === 'admin') href="{{ route('admin.dashboard') }}" 
        @else href="{{ route('proprietor.dashboard') }}" @endif class="sidebar-brand">
-      MultiSchool<span>Sys</span>
+      <img
+        src="{{ asset('admin-assets/images/logo/minilogo-removebg-preview.png') }}" width="110px" height="110px"
+        alt="">
     </a>
 
     <div class="sidebar-toggler not-active">
@@ -49,6 +51,18 @@
               <a href="{{ route('staff.results.index') }}"
                  class="nav-link {{ request()->routeIs('staff.results.index') ? 'active' : '' }}">
                  Results
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('admin.results.upload.form') }}"
+                 class="nav-link {{ request()->routeIs('admin.results.upload.form') ? 'active' : '' }}">
+                 Upload Results
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{ route('staff.results.index') }}"
+                 class="nav-link {{ request()->routeIs('staff.results.index') ? 'active' : '' }}">
+                 Report Card
               </a>
             </li>
           </ul>

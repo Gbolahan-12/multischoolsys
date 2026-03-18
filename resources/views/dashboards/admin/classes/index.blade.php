@@ -65,10 +65,10 @@
                                     <div class="d-flex align-items-start justify-content-between mb-3">
                                         <div>
                                             <h5 class="fw-bold mb-1">{{ $class->full_name }}</h5>
-                                            <small class="text-muted">
+                                            {{-- <small class="text-muted">
                                                 <i class="bi bi-person me-1"></i>
                                                 {{ $class->formTeacher?->fullname ?? 'No form teacher' }}
-                                            </small>
+                                            </small> --}}
                                         </div>
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-light border" data-bs-toggle="dropdown">
@@ -167,7 +167,7 @@
                                                 </div>
                                                 <div class="col-6">
                                                     <label class="form-label fw-medium">Level</label>
-                                                    <select name="level_id" class="form-select">
+                                                    <select name="level_id" class="form-control">
                                                         <option value="">-- None --</option>
                                                         @foreach($levels as $level)
                                                             <option value="{{ $level->id }}" {{ $class->level_id == $level->id ? 'selected' : '' }}>
@@ -178,7 +178,7 @@
                                                 </div>
                                                 <div class="col-6">
                                                     <label class="form-label fw-medium">Section</label>
-                                                    <select name="section_id" class="form-select">
+                                                    <select name="section_id" class="form-control">
                                                         <option value="">-- None --</option>
                                                         @foreach($sections as $section)
                                                             <option value="{{ $section->id }}" {{ $class->section_id == $section->id ? 'selected' : '' }}>
@@ -189,7 +189,7 @@
                                                 </div>
                                                 <div class="col-12">
                                                     <label class="form-label fw-medium">Form Teacher</label>
-                                                    <select name="form_teacher_id" class="form-select">
+                                                    <select name="form_teacher_id" class="form-control">
                                                         <option value="">-- None --</option>
                                                         @foreach($staff as $s)
                                                             <option value="{{ $s->id }}" {{ $class->form_teacher_id == $s->id ? 'selected' : '' }}>
@@ -236,7 +236,7 @@
                                                         <span class="text-muted fw-normal" style="font-size:12px;">(applies to all
                                                             selected)</span>
                                                     </label>
-                                                    <select name="teacher_id" class="form-select">
+                                                    <select name="teacher_id" class="form-control">
                                                         <option value="">-- None --</option>
                                                         @foreach($staff as $s)
                                                             <option value="{{ $s->id }}">{{ $s->fullname }}</option>
@@ -336,7 +336,7 @@
                                     required>
                                 @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
-                            <div class="col-6">
+                            {{-- <div class="col-6">
                                 <label class="form-label fw-medium">Level</label>
                                 <select name="level_id" class="form-select">
                                     <option value="">-- None --</option>
@@ -351,10 +351,10 @@
                                         <a href="{{ route('admin.classes.settings') }}">Add levels first</a>
                                     </div>
                                 @endif
-                            </div>
-                            <div class="col-6">
+                            </div> --}}
+                            <div class="col-12">
                                 <label class="form-label fw-medium">Section</label>
-                                <select name="section_id" class="form-select">
+                                <select name="section_id" class="form-control">
                                     <option value="">-- None --</option>
                                     @foreach($sections as $section)
                                         <option value="{{ $section->id }}" {{ old('section_id') == $section->id ? 'selected' : '' }}>
@@ -368,7 +368,7 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="col-12">
+                            {{-- <div class="col-12">
                                 <label class="form-label fw-medium">Form Teacher</label>
                                 <select name="form_teacher_id" class="form-select">
                                     <option value="">-- None --</option>
@@ -378,7 +378,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="modal-footer border-top">

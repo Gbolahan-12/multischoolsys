@@ -52,6 +52,20 @@ Route::middleware(['auth', 'verified', 'school.active', 'role:admin,proprietor']
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/classlist', [SchoolClassController::class, 'classlistView'])->name('class-list');
     Route::post('/classlist', [SchoolClassController::class, 'storeClass'])->name('class-store');
+    Route::get('/results', [AdminDashboardController::class, 'indexResult'])->name('results.index');
+    Route::get('/results/upload', [AdminDashboardController::class, 'uploadForm'])->name('results.upload.form');
+    Route::post('/results/upload', [AdminDashboardController::class, 'upload'])->name('results.upload');
+    Route::post('/results/upload', [AdminDashboardController::class, 'upload'])->name('results.upload');
+    Route::get('/results/download-template', [AdminDashboardController::class, 'downloadTemplate'])->name('results.download-template');
+    Route::get('/results/view', [AdminDashboardController::class, 'viewResult'])->name('results.view');
+    Route::get('/results/{result}/edit', [AdminDashboardController::class, 'editResult'])->name('results.edit');
+    Route::put('/results/{result}', [AdminDashboardController::class, 'updateResult'])->name('results.update');
+    Route::delete('/results/{result}', [AdminDashboardController::class, 'destroyResult'])->name('results.destroy');
+    Route::get('/export/results', [AdminDashboardController::class, 'indexReportCard'])->name('report-cards.index');
+    Route::get('/preview', [AdminDashboardController::class, 'preview'])->name('report-cards.preview');
+    Route::get('/download', [AdminDashboardController::class, 'download'])->name('report-cards.download');
+    Route::get('/terms', [AdminDashboardController::class, 'termsBySession'])->name('report-cards.terms');
+
     Route::get('/class-fee', [SchoolClassController::class, 'classFees'])->name('class.fees');
     Route::post('/class-fee', [SchoolClassController::class, 'storeClassFee'])->name('class.fee.store');
     Route::get('assign-class', [SchoolClassController::class, 'assignClass'])->name('assign.class');

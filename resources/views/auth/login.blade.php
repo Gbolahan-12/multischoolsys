@@ -17,13 +17,9 @@
     <!-- endinject -->
     <!-- Layout styles -->
     <link rel="stylesheet" href="{{ asset('admin-assets/css/demo_1/style.css') }}">
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="{{asset('admin-assets/images/favicon.png')}}" />
-    <style>
-        li {
-            list-style-type: none;
-        }
-    </style>
+    <link rel="shortcut icon" href="{{asset('admin-assets/images/logo/multischoollogo.jpeg')}}" />
 </head>
 
 <body>
@@ -42,8 +38,9 @@
                                 </div>
                                 <div class="col-md-8 pl-md-0">
                                     <div class="auth-form-wrapper px-4 py-5">
-                                        <a href="#"
-                                            class="noble-ui-logo d-block mb-2">MultiSchool<span>SYSTEM</span></a>
+                                        <a href="#" class="noble-ui-logo d-block mb-2"> <img
+                                                src="{{ asset('admin-assets/images/logo/multischoollogo-removebg-preview.png') }}"
+                                                width="180px" height="180px" alt=""> </a>
                                         <h5 class="text-muted font-weight-normal mb-4">Welcome back! Log in to your
                                             account.</h5>
                                         <form class="forms-sample" method="POST" action="{{ route('login') }}">
@@ -133,42 +130,42 @@
                     }).showToast();
                 @endif
 
-                });
+                    });
         </script>
     @endif
- <script>
-document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-    const forms = document.querySelectorAll("form");
+            const forms = document.querySelectorAll("form");
 
-    forms.forEach(form => {
-        form.addEventListener("submit", function () {
+            forms.forEach(form => {
+                form.addEventListener("submit", function () {
 
-            const btn = form.querySelector("button[type='submit'], input[type='submit']");
+                    const btn = form.querySelector("button[type='submit'], input[type='submit']");
 
-            if (btn) {
-                btn.disabled = true;
+                    if (btn) {
+                        btn.disabled = true;
 
-                const originalText = btn.innerHTML;
+                        const originalText = btn.innerHTML;
 
-                btn.innerHTML = `
+                        btn.innerHTML = `
                     <span class="spinner-border spinner-border-sm"></span>
                     Processing...
                 `;
-                btn.style.cursor = 'not-allowed';
+                        btn.style.cursor = 'not-allowed';
 
-                // Optional safety timeout
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                }, 15000);
-            }
+                        // Optional safety timeout
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.innerHTML = originalText;
+                        }, 15000);
+                    }
+
+                });
+            });
 
         });
-    });
-
-});
-</script>
+    </script>
 </body>
 
 </html>
