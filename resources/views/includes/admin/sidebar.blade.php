@@ -34,34 +34,34 @@
 
       <!-- Result -->
       <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('staff.results.*') ? '' : 'collapsed' }}"
+        <a class="nav-link {{ request()->routeIs('admin.results.*') ? '' : 'collapsed' }}"
            data-toggle="collapse"
            href="#emails"
            role="button"
-           aria-expanded="{{ request()->routeIs('staff.results.*') ? 'true' : 'false' }}">
+           aria-expanded="{{ request()->routeIs('admin.results.*') ? 'true' : 'false' }}">
            
           <i class="link-icon" data-feather="book"></i>
           <span class="link-title">Result</span>
           <i class="link-arrow" data-feather="chevron-down"></i>
         </a>
 
-        <div class="collapse {{ request()->routeIs('staff.results.*') ? 'show' : '' }}" id="emails">
+        <div class="collapse {{ request()->routeIs('admin.results.*') ? 'show' : '' }}" id="emails">
           <ul class="nav sub-menu">
             <li class="nav-item">
-              <a href="{{ route('staff.results.index') }}"
-                 class="nav-link {{ request()->routeIs('staff.results.index') ? 'active' : '' }}">
-                 Results
+              <a href="{{ route('admin.results.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.results.index') ? 'active' : '' }}">
+                 Upload Results
               </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
               <a href="{{ route('admin.results.upload.form') }}"
                  class="nav-link {{ request()->routeIs('admin.results.upload.form') ? 'active' : '' }}">
                  Upload Results
               </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
-              <a href="{{ route('staff.results.index') }}"
-                 class="nav-link {{ request()->routeIs('staff.results.index') ? 'active' : '' }}">
+              <a href="{{ route('admin.report-cards.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.report-cards.index') ? 'active' : '' }}">
                  Report Card
               </a>
             </li>

@@ -1,0 +1,202 @@
+/*
+ * Bootstrap Primary Color Override
+ * Primary: #1A69AE
+ * Place this file AFTER your bootstrap CSS import
+ * e.g. in your layout: <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
+ */
+
+:root {
+    --bs-primary:             #1A69AE;
+    --bs-primary-rgb:         26, 105, 174;
+    --bs-primary-hover:       #155a94;
+    --bs-primary-active:      #114d7e;
+
+    --bs-link-color:          #1A69AE;
+    --bs-link-hover-color:    #155a94;
+    --bs-link-color-rgb:      26, 105, 174;
+
+    --bs-focus-ring-color:    rgba(26, 105, 174, 0.25);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-primary {
+    background-color: #1A69AE !important;
+    border-color:     #1A69AE !important;
+    color:            #fff    !important;
+}
+
+.btn-primary:hover {
+    background-color: #155a94 !important;
+    border-color:     #155a94 !important;
+    color:            #fff    !important;
+}
+
+.btn-primary:focus,
+.btn-primary:focus-visible {
+    background-color: #155a94 !important;
+    border-color:     #155a94 !important;
+    box-shadow:       0 0 0 0.25rem rgba(26, 105, 174, 0.25) !important;
+}
+
+.btn-primary:active,
+.btn-primary.active,
+.show > .btn-primary.dropdown-toggle {
+    background-color: #114d7e !important;
+    border-color:     #114d7e !important;
+    color:            #fff    !important;
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+    background-color: #1A69AE !important;
+    border-color:     #1A69AE !important;
+    opacity:          0.65;
+}
+
+/* ── Outline Button ──────────────────────────────────────────── */
+.btn-outline-primary {
+    color:            #1A69AE !important;
+    border-color:     #1A69AE !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active,
+.btn-outline-primary.active {
+    background-color: #1A69AE !important;
+    border-color:     #1A69AE !important;
+    color:            #fff    !important;
+}
+
+.btn-outline-primary:focus,
+.btn-outline-primary:focus-visible {
+    box-shadow: 0 0 0 0.25rem rgba(26, 105, 174, 0.25) !important;
+}
+
+/* ── Background ──────────────────────────────────────────────── */
+.bg-primary {
+    background-color: #1A69AE !important;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(26, 105, 174, 0.1) !important;
+}
+
+/* ── Text ────────────────────────────────────────────────────── */
+.text-primary {
+    color: #1A69AE !important;
+}
+
+.text-primary-emphasis {
+    color: #114d7e !important;
+}
+
+/* ── Border ──────────────────────────────────────────────────── */
+.border-primary {
+    border-color: #1A69AE !important;
+}
+
+/* ── Badge ───────────────────────────────────────────────────── */
+.badge.bg-primary {
+    background-color: #1A69AE !important;
+    color:            #fff    !important;
+}
+
+.badge.bg-primary-subtle {
+    background-color: rgba(26, 105, 174, 0.15) !important;
+    color:            #1A69AE !important;
+}
+
+/* ── Links ───────────────────────────────────────────────────── */
+a {
+    color: #1A69AE;
+}
+
+a:hover {
+    color: #155a94;
+}
+
+/* ── Form Controls ───────────────────────────────────────────── */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: #1A69AE !important;
+    box-shadow:   0 0 0 0.25rem rgba(26, 105, 174, 0.25) !important;
+}
+
+.form-check-input:checked {
+    background-color: #1A69AE !important;
+    border-color:     #1A69AE !important;
+}
+
+/* ── Navbar ──────────────────────────────────────────────────── */
+.navbar-primary,
+.navbar.bg-primary {
+    background-color: #1A69AE !important;
+}
+
+/* ── Pagination ──────────────────────────────────────────────── */
+.page-item.active .page-link {
+    background-color: #1A69AE !important;
+    border-color:     #1A69AE !important;
+    color:            #fff    !important;
+}
+
+.page-link {
+    color: #1A69AE !important;
+}
+
+.page-link:hover {
+    color: #155a94 !important;
+}
+
+/* ── Progress Bar ────────────────────────────────────────────── */
+.progress-bar.bg-primary {
+    background-color: #1A69AE !important;
+}
+
+/* ── Alerts ──────────────────────────────────────────────────── */
+.alert-primary {
+    background-color: rgba(26, 105, 174, 0.1) !important;
+    border-color:     rgba(26, 105, 174, 0.3) !important;
+    color:            #114d7e !important;
+}
+
+/* ── List Group ──────────────────────────────────────────────── */
+.list-group-item.active {
+    background-color: #1A69AE !important;
+    border-color:     #1A69AE !important;
+}
+
+/* ── Nav Tabs / Pills ────────────────────────────────────────── */
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    background-color: #1A69AE !important;
+    color:            #fff    !important;
+}
+
+.nav-tabs .nav-link.active {
+    color:        #1A69AE !important;
+    border-color: #1A69AE #1A69AE #fff !important;
+}
+
+.nav-link {
+    color: #1A69AE !important;
+}
+
+.nav-link:hover {
+    color: #155a94 !important;
+}
+
+/* ── Spinner ─────────────────────────────────────────────────── */
+.spinner-border.text-primary,
+.spinner-grow.text-primary {
+    color: #1A69AE !important;
+}
+
+/* ── Dropdown ────────────────────────────────────────────────── */
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #1A69AE !important;
+    color:            #fff    !important;
+}

@@ -345,7 +345,7 @@ class PaymentController extends Controller
             $fees = Fee::with('feeType')
                 ->where('school_id', $schoolId)
                 ->where('term_id', $selectedTermId)
-                ->where('type', 'optional')
+                ->whereHas('feeType', fn ($q) => $q->where('type', 'optional')) // ← fix 1
                 ->get();
         }
 
@@ -360,7 +360,7 @@ class PaymentController extends Controller
                 ->where('school_id', $schoolId)
                 ->whereHas('fee', fn ($q) => $q
                     ->where('term_id', $selectedTermId)
-                    ->where('type', 'defaulter') // ← only defaulter fees
+                    ->whereHas('feeType', fn ($fq) => $fq->where('type', 'optional')) // ← fix 2
                 )
                 ->when($selectedFeeId, fn ($q) => $q->where('fee_id', $selectedFeeId))
                 ->when($request->status, fn ($q) => $q->where('status', $request->status))

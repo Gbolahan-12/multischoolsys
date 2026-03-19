@@ -82,7 +82,7 @@ class ReportCardController extends Controller
         }
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('dashboards.staff.report-cards.pdf', $data)
-            ->setPaper('a4', 'portrait')
+            ->setPaper('A4', 'portrait')
             ->setOptions([
                 'defaultFont' => 'sans-serif',
                 'isRemoteEnabled' => true,

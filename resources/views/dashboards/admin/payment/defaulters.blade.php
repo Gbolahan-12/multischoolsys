@@ -181,11 +181,21 @@
 
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle bg-warning bg-opacity-10 text-warning fw-bold
+                                    {{-- <div class="rounded-circle bg-warning bg-opacity-10 text-warning fw-bold
                                                 d-flex align-items-center justify-content-center flex-shrink-0"
                                          style="width:32px;height:32px;font-size:12px;">
                                         {{ strtoupper(substr($payment->student->first_name, 0, 1)) }}
-                                    </div>
+                                    </div> --}}
+                                    @if($payment->student->photo)
+                                        <img src="{{ asset('storage/' . $payment->student->photo) }}"
+                                            class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+                                    @else
+                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold
+                                                    d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="width:36px;height:36px;font-size:14px;">
+                                            {{ strtoupper(substr($payment->student->first_name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                     <div class="fw-semibold">
                                         {{ $payment->student->last_name }},
                                         {{ $payment->student->first_name }}

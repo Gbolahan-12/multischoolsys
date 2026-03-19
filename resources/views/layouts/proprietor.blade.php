@@ -23,7 +23,8 @@
 	<!-- endinject -->
 	<!-- Layout styles -->
 	<link rel="stylesheet" href="{{ asset('admin-assets/css/demo_1/style.css') }} ">
-	@vite(['resources/css/app.css','resources/scss/app.scss', 'resources/js/app.js'])
+	@vite(['resources/css/app.css','resources/js/app.js'])
+	<link rel="stylesheet" href="{{ asset('css/theme.css') }}">
 
 	<!-- End layout styles -->
 	    <link rel="shortcut icon" href="{{asset('admin-assets/images/logo/multischoollogo.jpeg')}}" />
@@ -82,22 +83,13 @@
 		crossorigin="anonymous"></script>
 	<!-- endinject -->
 	<!-- end custom js for this page -->
-	<script src="{{ asset('admin-assets/vendors/select2/select2.min.js') }}"></script>
+	{{-- <script src="{{ asset('admin-assets/vendors/select2/select2.min.js') }}"></script> --}}
 
-	<script src="{{ asset('admin-assets/js/select2.js') }}"></script>
+	{{-- <script src="{{ asset('admin-assets/js/select2.js') }}"></script> --}}
 
 	<script src="{{ asset('admin-assets/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script>
 	<!-- endinject -->
 	<script>
-		const alert = document.querySelector('.toast');
-		if (alert) {
-			console.log(alert + 'Success Alert');
-			setTimeout(() => {
-				alert.remove();
-			}, 3000);
-
-
-		}
 	</script>
 	@yield('script')
 	@stack('scripts')

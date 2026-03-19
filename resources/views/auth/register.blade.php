@@ -12,14 +12,11 @@
     <link rel="stylesheet" href="{{asset('admin-assets/vendors/flag-icon-css/css/flag-icon.min.css')}}">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/demo_1/style.css') }}">
         @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+        <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
 
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{{asset('admin-assets/images/logo/multischoollogo.jpeg')}}" />
-    <style>
-        li {
-            list-style-type: none;
-        }
-    </style>
+
 </head>
 
 <body>
