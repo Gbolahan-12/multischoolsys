@@ -168,24 +168,16 @@ class User extends Authenticatable
 
     public static function generateStaffId(int $schoolId): string
     {
-        $year = now()->year;
-        // $schoolId = Auth::user()->school_id;
-        $schoolName = Auth::user()->school->name;
-        // $schoolName = $schoolId->name;
-        $schoolCode = strtoupper(substr($schoolName, 0, 3));
-        // dd($schoolCode);
-        $prefix = "STF-{$year}-";
+        $school = \App\Models\School::find($schoolId);
+        $acronym = $school?->acronym ?? 'STF';
 
-        // Find the last staff ID for this school this year
-        $last = static::where('school_id', $schoolId)
-            ->where('staff_id', 'like', "{$prefix}%")
-            ->orderByDesc('staff_id')
-            ->value('staff_id');
+        $count = static::where('school_id', $schoolId)
+            ->whereIn('role', ['admin', 'staff', 'school-user'])
+            ->count();
 
-        $nextNumber = $last
-            ? (int) substr($last, strlen($prefix)) + 1
-            : 1;
-        return $schoolCode;
-        // return $prefix.str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $next = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+
+        return "{$acronym}/STA/{$next}";
+        // e.g. AMC/STA/001
     }
 }

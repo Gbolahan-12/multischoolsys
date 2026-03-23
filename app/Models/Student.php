@@ -99,15 +99,21 @@ class Student extends Model
         return "{$this->first_name} {$this->last_name}";
     }
 
-    // Auto-generate admission number: SCH-2025-0001
-    public static function generateAdmissionNumber(int $schoolId): string
-    {
-        $year = now()->year;
-        $count = static::withoutGlobalScope('school')
-            ->where('school_id', $schoolId)
-            ->whereYear('created_at', $year)
-            ->count() + 1;
+    // Auto-generate admission number:
 
-        return 'STU-'.$year.'-'.str_pad($count, 4, '0', STR_PAD_LEFT);
-    }
+public static function generateAdmissionNumber(int $schoolId): string
+{
+    $school  = \App\Models\School::find($schoolId);
+    $acronym = $school?->acronym ?? 'STU';
+
+    // Count existing students in this school
+    $count = static::withoutGlobalScope('school')
+        ->where('school_id', $schoolId)
+        ->count();
+
+    $next = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+
+    return "{$acronym}/STU/{$next}";
+    // e.g. AMC/STU/001
+}
 }

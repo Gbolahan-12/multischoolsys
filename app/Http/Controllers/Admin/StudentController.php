@@ -165,60 +165,59 @@ class StudentController extends Controller
     //         ->with('success', 'Student updated successfully.');
     // }
 
-
     public function update(Request $request, Student $student)
-{
-    $this->authorizeSchool($student);
+    {
+        $this->authorizeSchool($student);
 
-    $request->validate([
-        'first_name'       => ['required', 'string', 'max:100'],
-        'last_name'        => ['required', 'string', 'max:100'],
-        'other_name'       => ['nullable', 'string', 'max:100'],
-        'gender'           => ['required', Rule::in(['male', 'female'])],
-        'date_of_birth'    => ['nullable', 'date', 'before:today'],
-        'guardian_name'    => ['required', 'string', 'max:255'],
-        'guardian_phone'   => ['required', 'string', 'max:20'],
-        'guardian_email'   => ['nullable', 'email'],
-        'address'          => ['nullable', 'string', 'max:500'],
-        'admission_number' => [
-            'required', 'string', 'max:50',
-            Rule::unique('students')
-                ->where('school_id', Auth::user()->school_id)
-                ->ignore($student->id),
-        ],
-        'photo'            => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
-        'remove_photo'     => ['nullable', 'boolean'],
-    ]);
-    $photoPath = $student->photo;
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'other_name' => ['nullable', 'string', 'max:100'],
+            'gender' => ['required', Rule::in(['male', 'female'])],
+            'date_of_birth' => ['nullable', 'date', 'before:today'],
+            'guardian_name' => ['required', 'string', 'max:255'],
+            'guardian_phone' => ['required', 'string', 'max:20'],
+            'guardian_email' => ['nullable', 'email'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'admission_number' => [
+                'required', 'string', 'max:50',
+                Rule::unique('students')
+                    ->where('school_id', Auth::user()->school_id)
+                    ->ignore($student->id),
+            ],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:2048'],
+            'remove_photo' => ['nullable', 'boolean'],
+        ]);
+        $photoPath = $student->photo;
 
-    if ($request->boolean('remove_photo') && $student->photo) {
-        if (\Storage::disk('public')->exists($student->photo)) {
-            \Storage::disk('public')->delete($student->photo);
+        if ($request->boolean('remove_photo') && $student->photo) {
+            if (\Storage::disk('public')->exists($student->photo)) {
+                \Storage::disk('public')->delete($student->photo);
+            }
+            $photoPath = null;
         }
-        $photoPath = null;
-    }
 
-    if ($request->hasFile('photo')) {
-        // Delete old photo if exists
-        if ($student->photo && \Storage::disk('public')->exists($student->photo)) {
-            \Storage::disk('public')->delete($student->photo);
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if ($student->photo && \Storage::disk('public')->exists($student->photo)) {
+                \Storage::disk('public')->delete($student->photo);
+            }
+            $photoPath = $request->file('photo')->store('student-photos', 'public');
         }
-        $photoPath = $request->file('photo')->store('student-photos', 'public');
+
+        // ── Update student ────────────────────────────────────────
+        $student->update(array_merge(
+            $request->only([
+                'first_name', 'last_name', 'other_name', 'gender',
+                'date_of_birth', 'guardian_name', 'guardian_phone',
+                'guardian_email', 'address', 'admission_number',
+            ]),
+            ['photo' => $photoPath]
+        ));
+
+        return redirect()->route('admin.students.show', $student)
+            ->with('success', 'Student updated successfully.');
     }
-
-    // ── Update student ────────────────────────────────────────
-    $student->update(array_merge(
-        $request->only([
-            'first_name', 'last_name', 'other_name', 'gender',
-            'date_of_birth', 'guardian_name', 'guardian_phone',
-            'guardian_email', 'address', 'admission_number',
-        ]),
-        ['photo' => $photoPath]
-    ));
-
-    return redirect()->route('admin.students.show', $student)
-        ->with('success', 'Student updated successfully.');
-}
 
     // Assign student to a class for current session/term
     public function assignClass(Request $request, Student $student)
@@ -251,25 +250,26 @@ class StudentController extends Controller
 
         return back()->with('success', 'Student assigned to class successfully.');
     }
-public function search(Request $request)
-{
-    $q = $request->get('q', '');
 
-    if (strlen($q) < 2) {
-        return response()->json([]);
-    }
+    public function search(Request $request)
+    {
+        $q = $request->get('q', '');
 
-    $students = Student::where(function ($query) use ($q) {
+        if (strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $students = Student::where(function ($query) use ($q) {
             $query->where('first_name', 'like', "%{$q}%")
-                  ->orWhere('last_name',  'like', "%{$q}%")
-                  ->orWhere('admission_number', 'like', "%{$q}%");
+                ->orWhere('last_name', 'like', "%{$q}%")
+                ->orWhere('admission_number', 'like', "%{$q}%");
         })
-        ->active()
-        ->limit(10)
-        ->get(['id', 'first_name', 'last_name', 'admission_number']);
+            ->active()
+            ->limit(10)
+            ->get(['id', 'first_name', 'last_name', 'admission_number']);
 
-    return response()->json($students);
-}
+        return response()->json($students);
+    }
 
     public function toggleStatus(Student $student)
     {
@@ -293,56 +293,75 @@ public function search(Request $request)
 
     public function importForm()
     {
-        return view('dashboards.admin.student.import');
+
+        $classes = SchoolClass::where('school_id', Auth::user()->school_id)
+            ->with('section')
+            ->orderBy('name')
+            ->get();
+
+        return view('dashboards.admin.student.import', compact('classes'));
     }
 
     public function import(Request $request)
-    {
-        $request->validate([
-            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:5120'],
-        ]);
-
-        try {
-            $import = new StudentsImport(Auth::user()->school_id);
-            $import->import($request->file('file'));
-
-            $imported = $import->getRowCount();
-            $errors = $import->getErrors();
-
-            if (count($errors)) {
-                return back()
-                    ->with('import_errors', $errors)
-                    ->with('import_count', $imported)
-                    ->with('warning', "{$imported} students imported. ".count($errors).' rows had errors.');
+{
+    $request->validate([
+        'file'     => ['required', 'file', 'max:5120', function ($attribute, $value, $fail) {
+            $ext = strtolower($value->getClientOriginalExtension());
+            if (!in_array($ext, ['csv', 'xlsx', 'xls'])) {
+                $fail('The file must be a CSV, XLSX or XLS file.');
             }
+        }],
+        'class_id' => ['nullable', 'exists:classes,id'],
+    ]);
 
-            return redirect()->route('admin.students.index')
-                ->with('success', "{$imported} students imported successfully.");
+    try {
+        $import = new StudentsImport(
+            Auth::user()->school_id,
+            $request->class_id // ← pass class_id
+        );
+        $import->import($request->file('file'));
 
-        } catch (\Exception $e) {
-            return back()->with('error', 'Import failed: '.$e->getMessage());
+        $imported = $import->getRowCount();
+        $errors   = $import->getErrors();
+
+        if (count($errors)) {
+            return back()
+                ->with('import_errors', $errors)
+                ->with('import_count', $imported)
+                ->with('warning', "{$imported} students imported. " . count($errors) . ' rows had errors.');
         }
+
+        return redirect()->route('admin.students.index')
+            ->with('success', "{$imported} students imported successfully.");
+
+    } catch (\Exception $e) {
+        return back()->with('error', 'Import failed: ' . $e->getMessage());
     }
+}
 
     public function downloadTemplate()
-    {
-        $headers = ['first_name', 'last_name', 'other_name', 'gender', 'date_of_birth',
-            'guardian_name', 'guardian_phone', 'guardian_email', 'address', 'admission_number'];
+{
+    $headers = [
+        'first_name', 'last_name', 'other_name', 'gender', 'date_of_birth',
+        'guardian_name', 'guardian_phone', 'guardian_email', 'address', 'admission_number',
+    ];
 
-        $callback = function () use ($headers) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $headers);
-            // Sample row
-            fputcsv($file, ['John', 'Doe', '', 'male', '2010-05-15',
-                'Jane Doe', '08012345678', 'jane@email.com', '123 Street, Lagos', '']);
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="students_import_template.csv"',
+    $callback = function () use ($headers) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, $headers);
+        fputcsv($file, [
+            'John', 'Doe', '', 'male', '2010-05-15',
+            'Jane Doe', '08012345678', 'jane@email.com',
+            '123 Street, Lagos', '',
         ]);
-    }
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, [
+        'Content-Type'        => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="students_import_template.csv"',
+    ]);
+}
 
     private function authorizeSchool(Student $student): void
     {

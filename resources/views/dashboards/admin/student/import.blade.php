@@ -48,38 +48,61 @@
     <div class="row g-4">
         <div class="col-12 col-lg-7">
 
-            {{-- Upload Form --}}
-            <div class="card border-0 shadow-sm rounded-3">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h6 class="fw-semibold mb-0 text-uppercase text-muted" style="font-size:12px;letter-spacing:.05em;">
-                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i>Upload File
-                    </h6>
-                </div>
-                <div class="card-body p-4">
-                    <form action="{{ route('admin.students.import') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-4">
-                            <label class="form-label fw-medium">Select File <span class="text-danger">*</span></label>
-                            <input type="file" name="file" accept=".xlsx,.xls,.csv"
-                                   class="form-control @error('file') is-invalid @enderror" required>
-                            @error('file')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                            <div class="form-text">Accepted formats: .xlsx, .xls, .csv &bull; Max size: 5MB</div>
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-file-earmark-check me-1"></i> Import Students
-                            </button>
-                            <a href="{{ route('admin.students.download-template') }}"
-                               class="btn btn-outline-primary">
-                                <i class="bi bi-download me-1"></i> Download Template
-                            </a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
+    {{-- Upload Form --}}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white border-bottom py-3">
+            <h6 class="fw-semibold mb-0 text-uppercase text-muted" style="font-size:12px;letter-spacing:.05em;">
+                <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i>Upload File
+            </h6>
         </div>
+        <div class="card-body p-4">
+            <form action="{{ route('admin.students.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                {{-- Class dropdown --}}
+                <div class="mb-3">
+                    <label class="form-label fw-medium">
+                        Assign to Class
+                        <span class="text-muted fw-normal" style="font-size:12px;">(optional)</span>
+                    </label>
+                    <select name="class_id" class="form-select @error('class_id') is-invalid @enderror" required>
+                        <option value="">-- No class assignment --</option>
+                        @foreach($classes as $class)
+                        <option value="{{ $class->id }}" {{ old('class_id') == $class->id ? 'selected' : '' }}>
+                            {{ $class->name }}
+                            @if($class->section) — {{ $class->section->name }} @endif
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('class_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <div class="form-text">All uploaded students will be assigned to this class in the current term.</div>
+                </div>
+
+                {{-- File input --}}
+                <div class="mb-4">
+                    <label class="form-label fw-medium">Select File <span class="text-danger">*</span></label>
+                    <input type="file" name="file" accept=".xlsx,.xls,.csv"
+                           class="form-control @error('file') is-invalid @enderror" required>
+                    @error('file')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    <div class="form-text">Accepted formats: .xlsx, .xls, .csv &bull; Max size: 5MB</div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-file-earmark-check me-1"></i> Import Students
+                    </button>
+                    <a href="{{ route('admin.students.download-template') }}"
+                       class="btn btn-outline-primary">
+                        <i class="bi bi-download me-1"></i> Download Template
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
 
         <div class="col-12 col-lg-5">
 

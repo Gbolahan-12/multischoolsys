@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>NobleUI Responsive Bootstrap 4 Dashboard Template</title>
+    <title>Multi School Sys | Login</title>
     <!-- core:css -->
     <link rel="stylesheet" href="{{ asset('admin-assets/vendors/core/core.css') }}">
     <!-- endinject -->
@@ -41,7 +41,7 @@
                                     <div class="auth-form-wrapper px-4 py-5">
                                         <a href="#" class="noble-ui-logo d-block mb-2"> <img
                                                 src="{{ asset('admin-assets/images/logo/multischoollogo-removebg-preview.png') }}"
-                                                width="180px" height="180px" alt=""> </a>
+                                                width="80" alt=""> </a>
                                         <h5 class="text-muted font-weight-normal mb-4">Welcome back! Log in to your
                                             account.</h5>
                                         <form class="forms-sample" method="POST" action="{{ route('login') }}">
@@ -75,7 +75,7 @@
                                                     Login Now
                                                 </button>
                                             </div>
-                                            <a href="{{ route('register') }}" class="d-block mt-3 text-muted">Not a
+                                            <a href="{{ route('register') }}" class="d-block mt-3 text-primary">Not a
                                                 user? Sign
                                                 up</a>
                                         </form>

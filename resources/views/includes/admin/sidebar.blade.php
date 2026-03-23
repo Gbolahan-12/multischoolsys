@@ -85,53 +85,59 @@
         </a>
       </li>
 
-      <!-- Payments -->
-      <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? '' : 'collapsed' }}"
-           data-toggle="collapse"
-           href="#uiComponents"
-           role="button"
-           aria-expanded="{{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? 'true' : 'false' }}">
-           
-          <i class="link-icon" data-feather="credit-card"></i>
-          <span class="link-title">Payment</span>
-          <i class="link-arrow" data-feather="chevron-down"></i>
-        </a>
+     <!-- Payments -->
+<li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') || request()->routeIs('admin.payments.defaulters') ? '' : 'collapsed' }}"
+       data-toggle="collapse"
+       href="#uiComponents"
+       role="button"
+       aria-expanded="{{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? 'true' : 'false' }}">
+        <i class="link-icon" data-feather="credit-card"></i>
+        <span class="link-title">Payment</span>
+        <i class="link-arrow" data-feather="chevron-down"></i>
+    </a>
 
-        <div class="collapse {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? 'show' : '' }}" id="uiComponents">
-          <ul class="nav sub-menu">
+    <div class="collapse {{ request()->routeIs('admin.payments.*') || request()->routeIs('admin.paid-students.*') ? 'show' : '' }}" id="uiComponents">
+        <ul class="nav sub-menu">
 
             <li class="nav-item">
-              <a href="{{ route('admin.payments.create') }}"
-                 class="nav-link {{ request()->routeIs('admin.payments.create') ? 'active' : '' }}">
-                 Record Payment
-              </a>
+                <a href="{{ route('admin.payments.create') }}"
+                   class="nav-link {{ request()->routeIs('admin.payments.create') ? 'active' : '' }}">
+                    Record Payment
+                </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('admin.paid-students.index') }}"
-                 class="nav-link {{ request()->routeIs('admin.paid-students.index') ? 'active' : '' }}">
-                 Completed
-              </a>
+                <a href="{{ route('admin.paid-students.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.paid-students.index') ? 'active' : '' }}">
+                    Completed
+                </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('admin.payments.defaulter.index') }}"
-                 class="nav-link {{ request()->routeIs('admin.payments.defaulter.*') ? 'active' : '' }}">
-                 Optional
-              </a>
+                <a href="{{ route('admin.payments.defaulters') }}"
+                   class="nav-link {{ request()->routeIs('admin.payments.defaulters') ? 'active' : '' }}">
+                    Defaulters
+                </a>
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('admin.payments.index') }}"
-                 class="nav-link {{ request()->routeIs('admin.payments.index') ? 'active' : '' }}">
-                 All Payments
-              </a>
+                <a href="{{ route('admin.payments.defaulter.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.payments.defaulter.*') ? 'active' : '' }}">
+                    Optional
+                </a>
             </li>
 
-          </ul>
-        </div>
-      </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.payments.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.payments.index') ? 'active' : '' }}">
+                    All Payments
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</li>
 
       <li class="nav-item nav-category">Components</li>
 

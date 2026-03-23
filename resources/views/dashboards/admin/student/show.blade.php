@@ -36,11 +36,7 @@
                             <img src="{{ asset('storage/' . $student->photo) }}" class="rounded-circle"
                                 style="width:80px;height:80px;object-fit:cover;">
                         @else
-                                <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold
-                            d-flex align-items-center justify-content-center flex-shrink-0"
-                                    style="width:36px;height:36px;font-size:14px;">
-                                    {{ strtoupper(substr($student->first_name, 0, 1)) }}
-                                </div>
+                                <img src="{{ asset('profile-images/default-avatar.jpg') }}" style="width:80px;height:80px;object-fit:cover;" alt="">
                         @endif
                         <h5 class="fw-bold mb-1">{{ $student->full_name }}</h5>
                         <p class="text-muted mb-2" style="font-size:13px;">{{ $student->admission_number }}</p>
@@ -177,10 +173,17 @@
                     <div class="card-body p-0">
                         @forelse($student->classAssignments->sortByDesc('created_at') as $assignment)
                             <div class="d-flex align-items-center gap-3 px-4 py-3 border-bottom">
-                                <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                                {{-- <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0"
                                     style="width:36px;height:36px;font-size:13px;">
                                     <i class="bi bi-building"></i>
-                                </div>
+                                </div> --}}
+                                @if($student->photo)
+                            <img src="{{ asset('storage/' . $student->photo) }}" class="rounded-circle"
+                                style="width:50px;height:50px;object-fit:cover;">
+                        @else
+                            <img src="{{ asset('profile-images/default-avatar.jpg') }}" style="width:50px;height:50px;object-fit:cover;" alt="">
+
+                        @endif
                                 <div class="flex-grow-1">
                                     <div class="fw-semibold" style="font-size:14px;">
                                         {{ $assignment->schoolClass?->full_name ?? '—' }}

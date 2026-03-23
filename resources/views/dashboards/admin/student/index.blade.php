@@ -86,11 +86,8 @@
                                         <img src="{{ asset('storage/' . $student->photo) }}"
                                             class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
                                     @else
-                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold
-                                                    d-flex align-items-center justify-content-center flex-shrink-0"
-                                            style="width:36px;height:36px;font-size:14px;">
-                                            {{ strtoupper(substr($student->first_name, 0, 1)) }}
-                                        </div>
+                                                                        <img src="{{ asset('profile-images/default-avatar.jpg') }}" style="width:36px;height:36px;object-fit:cover;" alt="">
+
                                     @endif
                                             <div>
                                                 <div class="fw-semibold" style="font-size:14px;">{{ $student->short_name }}

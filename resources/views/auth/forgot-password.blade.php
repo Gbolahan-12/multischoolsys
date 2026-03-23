@@ -43,7 +43,7 @@
                                     <div class="auth-form-wrapper px-4 py-5">
                                         <a href="#" class="noble-ui-logo d-block mb-2"> <img
                                                 src="{{ asset('admin-assets/images/logo/multischoollogo-removebg-preview.png') }}"
-                                                width="180px" height="180px" alt=""> </a></a>
+                                                width="80" alt=""> </a></a>
                                         <h5 class="text-muted font-weight-normal mb-4">Forgot your password? No problem.
                                             Just let us know your email address and we will email you a password reset
                                             link that will allow you to choose a new one.</h5>
@@ -64,7 +64,7 @@
                                                     Email Password Reset Link
                                                 </button>
                                             </div>
-                                            <a href="{{ route('register') }}" class="d-block mt-3 text-muted">Not a
+                                            <a href="{{ route('register') }}" class="d-block mt-3 text-primary">Not a
                                                 user? Sign
                                                 up</a>
                                         </form>

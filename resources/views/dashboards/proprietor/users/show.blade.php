@@ -57,10 +57,12 @@
             <div class="card border-0 shadow-sm rounded-3 mb-4 text-center">
                 <div class="card-body p-4">
                     {{-- Avatar --}}
-                    <div class="mx-auto rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold mb-3"
+                    {{-- <div class="mx-auto rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center fw-bold mb-3"
                          style="width:80px;height:80px;font-size:28px;">
                         {{ strtoupper(substr($user->fullname, 0, 1)) }}
-                    </div>
+                    </div> --}}
+                    <img src="{{ asset($user->profile?->avatar ?? 'profile-images/default-avatar.jpg') }}"
+                                                class="rounded-circle" style="width:80px;height:80px;object-fit:cover;">
 
                     <h5 class="fw-bold mb-1">{{ $user->fullname }}</h5>
                     <p class="text-muted mb-2" style="font-size:14px;">{{ $user->email }}</p>

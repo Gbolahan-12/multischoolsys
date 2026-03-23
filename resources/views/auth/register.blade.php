@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>NobleUI Responsive Bootstrap 4 Dashboard Template</title>
+        <title>Multi School Sys | Register</title>
     <!-- core:css -->
     <link rel="stylesheet" href="{{ asset('admin-assets/vendors/core/core.css') }}">
     <link rel="stylesheet" href="{{ asset('admin-assets/fonts/feather-font/css/iconfont.css') }}">
@@ -13,8 +13,6 @@
     <link rel="stylesheet" href="{{ asset('admin-assets/css/demo_1/style.css') }}">
         @vite(['resources/scss/app.scss', 'resources/js/app.js'])
         <link rel="stylesheet" href="{{ asset('css/theme.css') }}">
-
-    <!-- End layout styles -->
     <link rel="shortcut icon" href="{{asset('admin-assets/images/logo/multischoollogo.jpeg')}}" />
 
 </head>
@@ -37,7 +35,7 @@
                                     <div class="auth-form-wrapper px-4 py-5">
                                         <a href="#" class="noble-ui-logo d-block mb-2"> <img
                                                 src="{{ asset('admin-assets/images/logo/multischoollogo-removebg-preview.png') }}"
-                                                width="180px" height="180px" alt=""> </a>
+                                                width="80" alt=""> </a>
                                         <h5 class="text-muted font-weight-normal mb-4">Welcome back! Log in to your
                                             <h5 class="text-muted font-weight-normal mb-4">Create a free account.</h5>
                                             <form class="forms-sample" method="POST" action="{{ route('register') }}">
@@ -114,7 +112,7 @@
                                                         Register Now
                                                     </button>
                                                 </div>
-                                                <a href="{{ route('login') }}" class="d-block mt-3 text-muted">Already a
+                                                <a href="{{ route('login') }}" class="d-block mt-3 text-primary">Already a
                                                     user? Sign in</a>
                                             </form>
                                     </div>

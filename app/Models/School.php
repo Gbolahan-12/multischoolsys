@@ -110,6 +110,15 @@ class School extends Model
     return $this->hasMany(\App\Models\Subscription::class);
 }
 
+public function getAcronymAttribute(): string
+{
+    $words = array_filter(explode(' ', $this->name));
+    return implode('', array_map(
+        fn($word) => strtoupper(substr(trim($word), 0, 1)),
+        $words
+    ));
+}
+
 public function latestSubscription()
 {
     return $this->hasOne(\App\Models\Subscription::class)->latestOfMany();

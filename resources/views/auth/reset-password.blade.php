@@ -47,7 +47,7 @@
                                     <div class="auth-form-wrapper px-4 py-5">
                                         <a href="#" class="noble-ui-logo d-block mb-2"> <img
                                                 src="{{ asset('admin-assets/images/logo/multischoollogo-removebg-preview.png') }}"
-                                                width="180px" height="180px" alt=""> </a>
+                                                width="80" alt=""> </a>
                                         <h5 class="text-muted font-weight-normal mb-4">Welcome back! Log in to your
                                             <h5 class="text-muted font-weight-normal mb-4">Welcome back! Log in to your
                                                 account.</h5>

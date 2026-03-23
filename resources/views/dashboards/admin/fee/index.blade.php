@@ -98,55 +98,21 @@
                                         </td>
                                         <td class="pe-4 text-end">
                                             <div class="d-flex gap-1 justify-content-end">
-                                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                                                <button class="btn btn-outline-secondary btn-sm"
+                                                    data-bs-toggle="modal"
                                                     data-bs-target="#editFeeModal{{ $fee->id }}">
                                                     <i data-feather="edit-3"></i>
-
                                                 </button>
                                                 <form action="{{ route('admin.fees.destroy', $fee) }}" method="POST">
                                                     @csrf @method('DELETE')
                                                     <button class="btn btn-outline-danger btn-sm"
                                                         onclick="return confirm('Delete this fee?')">
                                                         <i data-feather="trash"></i>
-
                                                     </button>
                                                 </form>
                                             </div>
                                         </td>
                                     </tr>
-
-                                    {{-- Edit Fee Modal --}}
-                                    <div class="modal fade" id="editFeeModal{{ $fee->id }}" tabindex="-1">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content border-0 shadow">
-                                                <form action="{{ route('admin.fees.update', $fee) }}" method="POST">
-                                                    @csrf @method('PUT')
-                                                    <div class="modal-header border-bottom">
-                                                        <h6 class="modal-title fw-bold">Edit Fee</h6>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body p-4">
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-medium">Amount (₦) <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="number" name="amount" value="{{ $fee->amount }}"
-                                                                class="form-control" min="1" step="0.01" required>
-                                                        </div>
-                                                        {{-- <div>
-                                                            <label class="form-label fw-medium">Description</label>
-                                                            <input type="text" name="description" value="{{ $fee->description }}"
-                                                                class="form-control">
-                                                        </div> --}}
-                                                    </div>
-                                                    <div class="modal-footer border-top">
-                                                        <button type="button" class="btn btn-outline-secondary btn-sm"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
@@ -166,6 +132,12 @@
         @endforelse
 
     </div>
+
+    {{-- ══════════════════════════════════════════════════════════
+         ALL MODALS ARE OUTSIDE THE MAIN CONTENT DIV
+         Edit Fee Type modals MUST be at the top level of <body>
+         never nested inside another modal
+    ══════════════════════════════════════════════════════════ --}}
 
     {{-- Create Fee Modal --}}
     <div class="modal fade" id="createFeeModal" tabindex="-1">
@@ -188,8 +160,7 @@
                                     @endforeach
                                 </select>
                                 @if($feeTypes->isEmpty())
-                                    <div class="form-text text-warning">No fee types yet. Create one using the Fee Types button.
-                                    </div>
+                                    <div class="form-text text-warning">No fee types yet. Create one using the Fee Types button.</div>
                                 @endif
                             </div>
                             <div class="col-6">
@@ -235,8 +206,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-outline-secondary btn-sm"
-                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary btn-sm">Create Fee</button>
                     </div>
                 </form>
@@ -244,7 +214,7 @@
         </div>
     </div>
 
-    {{-- Fee Types Modal --}}
+    {{-- Fee Types Modal (list + create form only — NO edit modals inside) --}}
     <div class="modal fade" id="feeTypesModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow">
@@ -253,6 +223,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
+                    {{-- Create fee type form --}}
                     <form action="{{ route('admin.fees.types.store') }}" method="POST" class="mb-4">
                         @csrf
                         <div class="row g-2 align-items-end">
@@ -261,31 +232,17 @@
                                 <input type="text" name="name" class="form-control form-control-sm"
                                     placeholder="e.g. School Fees" required>
                             </div>
-                            {{-- Add this field to your fee create/edit form --}}
                             <div class="col-12 col-sm-4">
                                 <label class="form-label fw-medium">Fee Type <span class="text-danger">*</span></label>
-                                <select name="type" class="form-control form-control-sm @error('type') is-invalid @enderror" required>
+                                <select name="type" class="form-select form-select-sm @error('type') is-invalid @enderror" required>
                                     <option value="">Select type</option>
-                                    <option value="compulsory" {{ old('type', $fee->type ?? '') === 'compulsory' ? 'selected' : '' }}>
-                                        Compulsory
-                                    </option>
-                                    <option value="optional" {{ old('type', $fee->type ?? '') === 'optional' ? 'selected' : '' }}>
-                                        Optional
-                                    </option>
+                                    <option value="compulsory">Compulsory</option>
+                                    <option value="optional">Optional</option>
                                 </select>
                                 @error('type')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                {{-- <small class="text-muted">
-                                    Compulsory fees will mark students as owing if unpaid.
-                                    Optional fees will not.
-                                </small> --}}
                             </div>
-                            {{-- <div class="col-12 col-sm-5">
-                                <label class="form-label fw-medium">Description</label>
-                                <input type="text" name="description" class="form-control form-control-sm"
-                                    placeholder="Optional">
-                            </div> --}}
                             <div class="col-12 col-sm-3">
                                 <button type="submit" class="btn btn-primary btn-sm w-100">
                                     <i class="bi bi-plus me-1"></i> Add Type
@@ -293,6 +250,8 @@
                             </div>
                         </div>
                     </form>
+
+                    {{-- Fee types list --}}
                     <div class="border rounded-3 overflow-hidden">
                         <table class="table table-hover align-middle mb-0" style="font-size:14px;">
                             <thead class="table-light">
@@ -306,11 +265,20 @@
                                 @forelse($feeTypes as $type)
                                     <tr>
                                         <td class="ps-3 fw-semibold">{{ $type->name }}</td>
-                                        <td class="text-muted d-none d-sm-table-cell">{{ $type->type ?? '—' }}</td>
+                                        <td class="d-none d-sm-table-cell">
+                                            @if($type->type === 'compulsory')
+                                                <span class="badge bg-primary-subtle text-primary rounded-pill" style="font-size:11px;">Compulsory</span>
+                                            @elseif($type->type === 'optional')
+                                                <span class="badge bg-warning-subtle text-warning rounded-pill" style="font-size:11px;">Optional</span>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                         <td class="pe-3 text-end">
                                             <div class="d-flex gap-2 justify-content-end">
-                                                <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#editFeeTypeModal{{ $type->id }}">
+                                                {{-- Edit button closes feeTypesModal then opens editFeeTypeModal --}}
+                                                <button class="btn btn-outline-secondary btn-sm"
+                                                    onclick="openEditFeeType({{ $type->id }}, '{{ addslashes($type->name) }}', '{{ $type->type }}')">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
                                                 <form action="{{ route('admin.fees.types.destroy', $type) }}" method="POST">
@@ -323,39 +291,6 @@
                                             </div>
                                         </td>
                                     </tr>
-
-                                    <div class="modal fade" id="editFeeTypeModal{{ $type->id }}" tabindex="-1">
-                                        <div class="modal-dialog modal-dialog-centered modal-sm">
-                                            <div class="modal-content border-0 shadow">
-                                                <form action="{{ route('admin.fees.types.update', $type) }}" method="POST">
-                                                    @csrf @method('PUT')
-                                                    <div class="modal-header border-bottom">
-                                                        <h6 class="modal-title fw-bold">Edit Fee Type</h6>
-                                                        <button type="button" class="btn-close"
-                                                            data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body p-4">
-                                                        <div class="mb-3">
-                                                            <label class="form-label fw-medium">Name <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="text" name="name" value="{{ $type->name }}"
-                                                                class="form-control" required>
-                                                        </div>
-                                                        {{-- <div>
-                                                            <label class="form-label fw-medium">Description</label>
-                                                            <input type="text" name="description"
-                                                                value="{{ $type->description }}" class="form-control">
-                                                        </div> --}}
-                                                    </div>
-                                                    <div class="modal-footer border-top">
-                                                        <button type="button" class="btn btn-outline-secondary btn-sm"
-                                                            data-bs-dismiss="modal">Cancel</button>
-                                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 @empty
                                     <tr>
                                         <td colspan="3" class="text-center text-muted py-4">No fee types yet.</td>
@@ -369,29 +304,116 @@
         </div>
     </div>
 
+    {{-- ── Edit Fee Type Modal (SINGLE modal, populated via JS — NOT nested) ── --}}
+    <div class="modal fade" id="editFeeTypeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow">
+                <form id="editFeeTypeForm" method="POST">
+                    @csrf @method('PUT')
+                    <div class="modal-header border-bottom">
+                        <h6 class="modal-title fw-bold">Edit Fee Type</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="editFeeTypeName" class="form-control" required>
+                        </div>
+                        <div>
+                            <label class="form-label fw-medium">Type <span class="text-danger">*</span></label>
+                            <select name="type" id="editFeeTypeType" class="form-select" required>
+                                <option value="compulsory">Compulsory</option>
+                                <option value="optional">Optional</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Edit Fee Modals (one per fee — outside all other modals) --}}
+    @foreach($fees->flatten() as $fee)
+    <div class="modal fade" id="editFeeModal{{ $fee->id }}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <form action="{{ route('admin.fees.update', $fee) }}" method="POST">
+                    @csrf @method('PUT')
+                    <div class="modal-header border-bottom">
+                        <h6 class="modal-title fw-bold">Edit Fee</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Amount (₦) <span class="text-danger">*</span></label>
+                            <input type="number" name="amount" value="{{ $fee->amount }}"
+                                class="form-control" min="1" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endforeach
+
     @push('scripts')
-        <script>
-            // Load terms when session changes
-            document.getElementById('feeSessionSelect')?.addEventListener('change', function () {
-                const sessionId = this.value;
-                const termSelect = document.getElementById('feeTermSelect');
-                termSelect.innerHTML = '<option value="">Loading...</option>';
+    <script>
+        // Load terms when session changes in create fee modal
+        document.getElementById('feeSessionSelect')?.addEventListener('change', function () {
+            const sessionId = this.value;
+            const termSelect = document.getElementById('feeTermSelect');
+            termSelect.innerHTML = '<option value="">Loading...</option>';
 
-                if (!sessionId) {
-                    termSelect.innerHTML = '<option value="">-- Select Session First --</option>';
-                    return;
-                }
+            if (!sessionId) {
+                termSelect.innerHTML = '<option value="">-- Select Session First --</option>';
+                return;
+            }
 
-                fetch(`/admin/fees/terms-by-session/${sessionId}`)
-                    .then(r => r.json())
-                    .then(terms => {
-                        termSelect.innerHTML = '<option value="">-- Select Term --</option>';
-                        terms.forEach(t => {
-                            termSelect.innerHTML += `<option value="${t.id}">${t.name.charAt(0).toUpperCase() + t.name.slice(1)} Term</option>`;
-                        });
+            fetch(`/admin/fees/terms-by-session/${sessionId}`)
+                .then(r => r.json())
+                .then(terms => {
+                    termSelect.innerHTML = '<option value="">-- Select Term --</option>';
+                    terms.forEach(t => {
+                        termSelect.innerHTML += `<option value="${t.id}">${t.name.charAt(0).toUpperCase() + t.name.slice(1)} Term</option>`;
                     });
-            });
-        </script>
+                });
+        });
+
+        // Open edit fee type modal:
+        // 1. Close the feeTypesModal first
+        // 2. Populate the single edit modal with the fee type data
+        // 3. Open the edit modal
+        function openEditFeeType(id, name, type) {
+            // Build the update route dynamically
+            const baseUrl = "{{ url('admin/fees/types') }}";
+            document.getElementById('editFeeTypeForm').action = `${baseUrl}/${id}`;
+            document.getElementById('editFeeTypeName').value  = name;
+            document.getElementById('editFeeTypeType').value  = type;
+
+            // Close parent modal first, then open edit modal after it's hidden
+            const feeTypesModal = bootstrap.Modal.getInstance(document.getElementById('feeTypesModal'));
+            const editModal     = new bootstrap.Modal(document.getElementById('editFeeTypeModal'));
+
+            if (feeTypesModal) {
+                document.getElementById('feeTypesModal').addEventListener('hidden.bs.modal', function handler() {
+                    editModal.show();
+                    // Remove listener so it doesn't fire again next time
+                    document.getElementById('feeTypesModal').removeEventListener('hidden.bs.modal', handler);
+                });
+                feeTypesModal.hide();
+            } else {
+                editModal.show();
+            }
+        }
+    </script>
     @endpush
 
 @endsection

@@ -26,8 +26,8 @@ use App\Models\SchoolClass;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->get('/', function () {
-    return view('auth.login');
-})->name('loginview');
+    return view('welcome');
+})->name('welcome');
 
 Route::middleware('auth')->group(function () {
     Route::get('/school/pending', fn () => view('auth.pending'))->name('school.pending');
@@ -78,6 +78,7 @@ Route::middleware(['auth', 'verified', 'school.active', 'role:admin,proprietor']
     Route::post('/makepayment', [SchoolPaymentController::class, 'store'])->name('admin.payment.store');
     Route::get('/payments', [SchoolPaymentController::class, 'allPayments'])->name('admin.payment.list');
     Route::get('/complete-payments', [SchoolPaymentController::class, 'completePayments'])->name('admin.complete.payments');
+    Route::get('/payments/defaulters', [SchoolPaymentController::class, 'defaulters'])->name('payments.defaulters');
     Route::get('/defaulters', [AdminDashboard::class, 'defaulters'])->name('defaulters');
 
     Route::get('/users', [AdminDashboardController::class, 'staffList'])->name('users.index');
