@@ -35,7 +35,7 @@ class ReportCardController extends Controller
         ->unique();
 
     $classes = SchoolClass::where('school_id', $schoolId)
-        ->whereIn('id', $assignedClassIds)
+        // ->whereIn('id', $assignedClassIds)
         ->orderBy('name')
         ->get();
 

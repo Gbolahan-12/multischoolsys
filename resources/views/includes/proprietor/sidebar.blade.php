@@ -101,6 +101,12 @@
                 Completed
               </a>
             </li>
+             <li class="nav-item">
+                <a href="{{ route('admin.payments.defaulters') }}"
+                   class="nav-link {{ request()->routeIs('admin.payments.defaulters') ? 'active' : '' }}">
+                    Defaulters
+                </a>
+            </li>
 
             <li class="nav-item">
               <a href="{{ route('admin.payments.defaulter.index') }}"
@@ -144,9 +150,9 @@
             </li>
 
             <li class="nav-item">
-              <a href="{{ route('admin.class.fees') }}"
-                class="nav-link {{ request()->routeIs('admin.class.fees') ? 'active' : '' }}">
-                Class Fee
+              <a href="{{ route('admin.fees.index') }}"
+                 class="nav-link {{ request()->routeIs('admin.fees.*') ? 'active' : '' }}">
+                 Class Fee
               </a>
             </li>
 

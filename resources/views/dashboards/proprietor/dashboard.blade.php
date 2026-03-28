@@ -93,7 +93,7 @@
                             </div>
                             <span class="badge bg-warning bg-opacity-10 rounded-pill" style="font-size:11px;">Active</span>
                         </div>
-                        <h3 class="fw-bold mb-0">{{ $totalStaff + $totalAdmins }}</h3>
+                        <h3 class="fw-bold mb-0">{{ $totalStaff }}</h3>
                         <small class="text-muted">Staff & Admins</small>
                     </div>
                 </div>

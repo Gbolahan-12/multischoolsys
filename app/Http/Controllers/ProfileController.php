@@ -142,6 +142,7 @@ class ProfileController extends Controller
 
     public function updateSchool(Request $request)
     {
+        dd($request->all());
         $school = Auth::user()->school;
 
         $request->validate([

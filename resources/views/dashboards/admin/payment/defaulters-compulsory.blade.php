@@ -88,10 +88,10 @@
     <div class="row g-3 mb-4">
         @php
             $cards = [
-                ['label' => 'Total Defaulters', 'value' => $summary['total_defaulters'],                           'icon' => 'bi-people',            'color' => '#dc3545'],
-                ['label' => 'Never Paid',        'value' => $summary['no_payment'],                                'icon' => 'bi-x-circle',          'color' => '#ef4444'],
-                ['label' => 'Partial Payment',   'value' => $summary['partial'],                                   'icon' => 'bi-hourglass-split',   'color' => '#f59f00'],
-                ['label' => 'Total Outstanding', 'value' => '₦' . number_format($summary['total_outstanding'], 2), 'icon' => 'bi-cash-stack',        'color' => '#6f42c1'],
+                ['label' => 'Total Defaulters',  'value' => $summary['total_defaulters'],                            'icon' => 'bi-people',            'color' => '#dc3545'],
+                ['label' => 'Never Paid',         'value' => $summary['no_payment'],                                 'icon' => 'bi-x-circle',          'color' => '#ef4444'],
+                ['label' => 'Partial Payment',    'value' => $summary['partial'],                                    'icon' => 'bi-hourglass-split',   'color' => '#f59f00'],
+                ['label' => 'Total Outstanding',  'value' => '₦' . number_format($summary['total_outstanding'], 2), 'icon' => 'bi-cash-stack',        'color' => '#6f42c1'],
             ];
         @endphp
         @foreach($cards as $card)
@@ -139,10 +139,9 @@
                     <tbody>
                         @foreach($defaulters as $i => $student)
                         @php
-                            $paid    = (float) ($student->amount_paid ?? 0);
-                            $status  = $paid > 0 ? 'partial' : 'not_paid';
-                            $sc      = $paid > 0 ? 'warning' : 'danger';
-                            $sl      = $paid > 0 ? 'Partial' : 'Not Paid';
+                            $paid = (float) ($student->amount_paid ?? 0);
+                            $sc   = $paid > 0 ? 'warning' : 'danger';
+                            $sl   = $paid > 0 ? 'Partial'  : 'Not Paid';
                         @endphp
                         <tr>
                             <td class="ps-4 text-muted">

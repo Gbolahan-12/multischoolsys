@@ -27,7 +27,8 @@ class UserManagementController extends Controller
 
     public function index()
     {
-        $users = User::with('profile')
+        $schoolId = Auth::user()->school_id;
+        $users = User::where('school_id', $schoolId)->with('profile')
             ->whereIn('role', ['admin', 'staff'])
             ->latest()
             ->paginate(20);

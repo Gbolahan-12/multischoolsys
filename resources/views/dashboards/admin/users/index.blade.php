@@ -8,7 +8,7 @@
         {{-- Header --}}
         <div class="d-flex align-items-center justify-content-between mb-4">
             <div>
-                <h4 class="fw-bold mb-0">Users</h4>
+                <h4 class="fw-bold mb-0">Staff</h4>
                 <small class="text-muted">Manage admin and staff accounts</small>
             </div>
             <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">

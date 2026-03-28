@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         // ── Snapshot Stats ────────────────────────────────────────
         $totalStudents = Student::where('school_id', $schoolId)->where('is_active', true)->count();
-        $totalStaff    = User::where('school_id', $schoolId)->whereIn('role', ['admin', 'staff', 'school-user'])->where('is_active', true)->count();
+        $totalStaff    = User::where('school_id', $schoolId)->whereIn('role', ['admin', 'staff'])->where('is_active', true)->count();
         $totalAdmins   = User::where('school_id', $schoolId)->where('role', 'admin')->where('is_active', true)->count();
 
         // ── Compulsory fee IDs for current term ───────────────────

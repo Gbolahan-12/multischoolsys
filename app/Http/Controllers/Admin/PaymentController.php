@@ -383,7 +383,7 @@ class PaymentController extends Controller
             $payments = $query->paginate(20)->withQueryString();
         }
 
-        return view('dashboards.admin.payment.defaulters', compact(
+        return view('dashboards.admin.payment.optional', compact(
             'sessions', 'terms', 'fees', 'payments', 'summary',
             'selectedSessionId', 'selectedTermId', 'selectedFeeId',
         ));
@@ -401,7 +401,7 @@ class PaymentController extends Controller
 
         // Only defaulter fees for current term
         $fees = Fee::with(['feeType', 'schoolClass'])
-            ->where('type', 'defaulter') // ← only defaulter fees
+            ->whereHas('feeType', fn ($q) => $q->where('type', 'optional'))
             ->when($currentTerm, fn ($q) => $q->where('term_id', $currentTerm->id))
             ->orderBy('created_at', 'desc')
             ->get();
@@ -430,14 +430,12 @@ class PaymentController extends Controller
             'note' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $fee = Fee::findOrFail($request->fee_id);
+        $fee = Fee::with('feeType')->findOrFail($request->fee_id); // ← add with('feeType')
         $student = Student::findOrFail($request->student_id);
 
         abort_if($fee->school_id !== Auth::user()->school_id, 403);
         abort_if($student->school_id !== Auth::user()->school_id, 403);
-
-        // Ensure the fee is actually a defaulter fee
-        abort_if($fee->type !== 'defaulter', 403, 'This fee is not a defaulter fee.');
+        abort_if($fee->feeType->type !== 'optional', 403, 'This fee is not an optional fee.'); // ← fixed
 
         $existing = Payment::where('student_id', $student->id)->where('fee_id', $fee->id)->first();
         $previouslyPaid = $existing?->amount_paid ?? 0;

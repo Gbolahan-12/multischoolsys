@@ -184,7 +184,7 @@ class SchoolPaymentController extends Controller
             ];
         }
 
-        return view('dashboards.admin.payment.defaulters', compact(
+        return view('dashboards.admin.payment.defaulters-compulsory', compact(
             'sessions', 'terms', 'defaulters', 'summary',
             'selectedSessionId', 'selectedTermId',
             'compulsoryFeeIds', 'currentTerm', 'currentSession'
