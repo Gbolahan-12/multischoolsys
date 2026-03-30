@@ -4,7 +4,6 @@
 @section('title', 'Dashboard')
 @section('content')
 <div class="container-fluid px-4">
-
     {{-- Header --}}
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <div>
@@ -22,103 +21,191 @@
         </div>
     </div>
 
-    {{-- Stat Cards --}}
-    <div class="row g-3 mb-4">
+{{-- ── Stat Cards Row 1 — Core Stats ── --}}
+<div class="row g-3 mb-3">
 
-        <div class="col-6 col-lg-4 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-primary bg-opacity-10 text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;">
-                        <i class="bi bi-people fs-5"></i>
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-primary bg-opacity-10 p-2">
+                        <i class="bi bi-people-fill fs-5 text-white"></i>
                     </div>
-                    <div>
-                        <div class="fw-bold fs-5 lh-1 mb-1">{{ number_format($totalStudents) }}</div>
-                        <small class="text-muted">Students</small>
-                    </div>
+                    <span class="badge bg-primary bg-opacity-10 text-white rounded-pill" style="font-size:11px;">Active</span>
                 </div>
+                <h3 class="fw-bold mb-0">{{ number_format($totalStudents) }}</h3>
+                <small class="text-muted">Total Students</small>
             </div>
         </div>
-
-        <div class="col-6 col-lg-4 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-info bg-opacity-10 text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;">
-                        <i class="bi bi-person-badge fs-5"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold fs-5 lh-1 mb-1">{{ number_format($totalStaff) }}</div>
-                        <small class="text-muted">Staff</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-4 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-success bg-opacity-10 text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;">
-                        <i class="bi bi-cash-stack fs-5"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold fs-5 lh-1 mb-1">₦{{ number_format($feesCollected, 0) }}</div>
-                        <small class="text-muted">Collected</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-4 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-danger bg-opacity-10 text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;">
-                        <i class="bi bi-exclamation-circle fs-5"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold fs-5 lh-1 mb-1">{{ number_format($studentsOwing) }}</div>
-                        <small class="text-muted">Owing</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-4 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-warning bg-opacity-10 text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;">
-                        <i class="bi bi-journal-check fs-5"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold fs-5 lh-1 mb-1">{{ number_format($resultsUploaded) }}</div>
-                        <small class="text-muted">Results</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-lg-4 col-xl-4">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-3 bg-secondary bg-opacity-10 text-white d-flex align-items-center justify-content-center flex-shrink-0"
-                         style="width:44px;height:44px;">
-                        <i class="bi bi-percent fs-5"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold fs-5 lh-1 mb-1">
-                            {{ $totalStudents > 0 ? round((($totalStudents - $studentsOwing) / $totalStudents) * 100) : 0 }}%
-                        </div>
-                        <small class="text-muted">Paid Up</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-success bg-opacity-10 p-2">
+                        <i class="bi bi-person-hearts fs-5 text-white"></i>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-white rounded-pill" style="font-size:11px;">Active</span>
+                </div>
+                <h3 class="fw-bold mb-0">{{ number_format($totalStaff, 0) }}</h3>
+                <small class="text-muted">Total Staff</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-danger bg-opacity-10 p-2">
+                        <i class="bi bi-exclamation-circle-fill fs-5 text-white"></i>
+                    </div>
+                    <span class="badge bg-danger bg-opacity-10 text-white rounded-pill" style="font-size:11px;">Owing</span>
+                </div>
+                <h3 class="fw-bold mb-0">{{ number_format($studentsOwing) }}</h3>
+                <small class="text-muted">Defaulters</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-info bg-opacity-10 p-2">
+                        <i class="bi bi-file-earmark-bar-graph fs-5 text-white"></i>
+                    </div>
+                    <span class="badge bg-info bg-opacity-10 text-white rounded-pill" style="font-size:11px;">This Term</span>
+                </div>
+                <h3 class="fw-bold mb-0">{{ number_format($resultsUploaded) }}</h3>
+                <small class="text-muted">Results Uploaded</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{{-- ── Stat Cards Row 2 — Financial Summary (Compulsory Fees) ── --}}
+<div class="row g-3 mb-4">
+
+    {{-- Section label --}}
+    <div class="col-12">
+        <small class="text-muted fw-semibold text-uppercase" style="font-size:11px;letter-spacing:.08em;">
+            <i class="bi bi-shield-check me-1 text-primary"></i>
+            Compulsory Fee Summary —
+            {{ $currentTerm ? ucfirst($currentTerm->name) . ' Term' : 'Current Term' }}
+            @if($currentSession) &bull; {{ $currentSession->name }} @endif
+        </small>
+    </div>
+
+    {{-- Defaulters --}}
+    {{-- <div class="col-6 col-lg-3">
+        <div class="card border-0 shadow-sm rounded-3 h-100"
+             style="border-left:3px solid #dc3545 !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-danger bg-opacity-10 p-2">
+                        <i class="bi bi-person-x-fill fs-5 text-danger"></i>
+                    </div>
+                    <a href="{{ route('admin.payments.defaulters') }}"
+                       class="badge bg-danger bg-opacity-10 text-danger rounded-pill text-decoration-none"
+                       style="font-size:11px;">
+                        View <i class="bi bi-arrow-right ms-1" style="font-size:9px;"></i>
+                    </a>
+                </div>
+                <h3 class="fw-bold mb-0 text-danger">{{ number_format($defaultersCount) }}</h3>
+                <small class="text-muted">Defaulters</small>
+                <div class="mt-2" style="font-size:11px;color:#9ca3af;">
+                    Students with unpaid compulsory fees
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+    {{-- Amount Expected --}}
+    <div class="col-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100"
+             style="border-left:3px solid #1A69AE !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-primary bg-opacity-10 p-2">
+                        <i class="bi bi-calculator fs-5 text-primary"></i>
+                    </div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill" style="font-size:11px;">
+                        Expected
+                    </span>
+                </div>
+                <h3 class="fw-bold mb-0">₦{{ number_format($amountExpected, 0) }}</h3>
+                <small class="text-muted">Amount Expected</small>
+                <div class="mt-2" style="font-size:11px;color:#9ca3af;">
+                    Total compulsory fees this term
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Amount Paid --}}
+    <div class="col-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100"
+             style="border-left:3px solid #198754 !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-success bg-opacity-10 p-2">
+                        <i class="bi bi-check-circle-fill fs-5 text-white"></i>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-white rounded-pill" style="font-size:11px;">
+                        Collected
+                    </span>
+                </div>
+                <h3 class="fw-bold mb-0 text-success">₦{{ number_format($amountPaid, 0) }}</h3>
+                <small class="text-muted">Amount Paid</small>
+                @if($amountExpected > 0)
+                <div class="mt-2">
+                    @php $paidPct = min(100, round(($amountPaid / $amountExpected) * 100)); @endphp
+                    <div class="progress rounded-pill" style="height:4px;">
+                        <div class="progress-bar bg-success" style="width:{{ $paidPct }}%"></div>
+                    </div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:3px;">
+                        {{ $paidPct }}% collected
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    {{-- Amount Remaining --}}
+    <div class="col-6 col-lg-4">
+        <div class="card border-0 shadow-sm rounded-3 h-100"
+             style="border-left:3px solid #f59f00 !important;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="rounded-3 bg-warning bg-opacity-10 p-2">
+                        <i class="bi bi-hourglass-split fs-5 text-white"></i>
+                    </div>
+                    <span class="badge bg-warning bg-opacity-10 text-white rounded-pill" style="font-size:11px;">
+                        Pending
+                    </span>
+                </div>
+                <h3 class="fw-bold mb-0 text-warning">₦{{ number_format($amountRemaining, 0) }}</h3>
+                <small class="text-muted">Amount Remaining</small>
+                @if($amountExpected > 0)
+                <div class="mt-2">
+                    @php $remainPct = min(100, round(($amountRemaining / $amountExpected) * 100)); @endphp
+                    <div class="progress rounded-pill" style="height:4px;">
+                        <div class="progress-bar bg-warning" style="width:{{ $remainPct }}%"></div>
+                    </div>
+                    <div style="font-size:11px;color:#9ca3af;margin-top:3px;">
+                        {{ $remainPct }}% still outstanding
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+</div>
     {{-- Charts Row 1 --}}
     <div class="row g-4 mb-4">
 

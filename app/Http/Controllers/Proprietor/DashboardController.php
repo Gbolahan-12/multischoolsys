@@ -42,25 +42,21 @@ class DashboardController extends Controller
         $outstanding = $termPayments->outstanding ?? 0;
 
         // ── Students owing (compulsory fees only) ─────────────────
-        // Owing = students with partial/owing payment OR no payment at all
         $studentsOwing = 0;
 
         if ($currentTerm && $compulsoryFeeIds->isNotEmpty()) {
 
-            // Students who have made at least one payment (any status) for a compulsory fee
             $studentsThatPaid = Payment::where('school_id', $schoolId)
                 ->whereIn('fee_id', $compulsoryFeeIds)
                 ->pluck('student_id')
                 ->unique();
 
-            // Students with partial or still-owing payment records
             $partialStudentIds = Payment::where('school_id', $schoolId)
                 ->whereIn('fee_id', $compulsoryFeeIds)
                 ->whereIn('status', ['partial', 'owing'])
                 ->pluck('student_id')
                 ->unique();
 
-            // Active students who have NO payment record at all for compulsory fees
             $noPaymentStudentIds = Student::where('school_id', $schoolId)
                 ->where('is_active', true)
                 ->whereNotIn('id', $studentsThatPaid)
@@ -70,6 +66,43 @@ class DashboardController extends Controller
                 ->merge($noPaymentStudentIds)
                 ->unique()
                 ->count();
+        }
+
+        // ── Financial Summary (compulsory fees only) ──────────────
+        // Amount Expected = sum of all compulsory fee amounts × number of students
+        // We calculate it as: total compulsory fees defined for current term
+        // multiplied by applicable students per fee (class-specific or all)
+        $amountExpected = 0;
+        $amountPaid     = (float) ($collected ?? 0);
+        $amountRemaining = 0;
+        $defaultersCount = $studentsOwing;
+
+        if ($currentTerm && $compulsoryFeeIds->isNotEmpty()) {
+            // Get all compulsory fees for this term
+            $compulsoryFees = Fee::where('school_id', $schoolId)
+                ->where('term_id', $currentTerm->id)
+                ->whereHas('feeType', fn($q) => $q->where('type', 'compulsory'))
+                ->get();
+
+            foreach ($compulsoryFees as $fee) {
+                if ($fee->class_id) {
+                    // Class-specific fee — count students in that class this term
+                    $studentCount = Student::where('school_id', $schoolId)
+                        ->where('is_active', true)
+                        ->whereHas('classAssignments', fn($q) => $q
+                            ->where('class_id', $fee->class_id)
+                            ->where('term_id', $currentTerm->id)
+                        )
+                        ->count();
+                } else {
+                    // All classes fee — count all active students
+                    $studentCount = $totalStudents;
+                }
+
+                $amountExpected += (float) $fee->amount * $studentCount;
+            }
+
+            $amountRemaining = max(0, $amountExpected - $amountPaid);
         }
 
         // ── Payment Growth (last 6 months) ────────────────────────
@@ -95,7 +128,6 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->pluck('count', 'status');
 
-        // Add students with no payment to the 'owing' bucket in breakdown
         $noPaymentCount = $currentTerm && $compulsoryFeeIds->isNotEmpty()
             ? Student::where('school_id', $schoolId)
                 ->where('is_active', true)
@@ -124,6 +156,7 @@ class DashboardController extends Controller
             'currentSession', 'currentTerm',
             'totalStudents', 'totalStaff', 'totalAdmins',
             'collected', 'outstanding', 'studentsOwing',
+            'amountExpected', 'amountPaid', 'amountRemaining', 'defaultersCount',
             'paymentGrowth', 'studentGrowth', 'paymentBreakdown',
             'recentPayments'
         ));

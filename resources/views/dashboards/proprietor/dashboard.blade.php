@@ -35,15 +35,15 @@
             </div>
         @endif
 
-        {{-- ── Stat Cards ── --}}
-        <div class="row g-3 mb-4">
+        {{-- ── Stat Cards Row 1 — Student & Staff ── --}}
+        <div class="row g-3 mb-3">
 
-            <div class="col-6 col-lg-3">
+            <div class="col-6 col-lg-4">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div class="rounded-3 bg-primary text-white bg-opacity-10 p-2">
-                                <i class="bi bi-people-fill  fs-5"></i>
+                                <i class="bi bi-people-fill fs-5 text-white"></i>
                             </div>
                             <span class="badge bg-primary bg-opacity-10 rounded-pill" style="font-size:11px;">Active</span>
                         </div>
@@ -53,48 +53,165 @@
                 </div>
             </div>
 
-            <div class="col-6 col-lg-3">
+            <div class="col-6 col-lg-4">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="rounded-3 bg-success text-white bg-opacity-10 p-2">
-                                <i class="bi bi-cash-stack fs-5"></i>
+                            <div class="rounded-3 bg-warning bg-opacity-10 p-2">
+                                <i class="bi bi-person-workspace fs-5 text-white"></i>
                             </div>
-                            <span class="badge bg-success bg-opacity-10 rounded-pill" style="font-size:11px;">This
-                                Term</span>
-                        </div>
-                        <h3 class="fw-bold mb-0">₦{{ number_format($collected, 0) }}</h3>
-                        <small class="text-muted">Fees Collected</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="card border-0 shadow-sm rounded-3 h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="rounded-3 bg-danger text-white bg-opacity-10 p-2">
-                                <i class="bi bi-exclamation-circle-fill fs-5"></i>
-                            </div>
-                            <span class="badge bg-danger bg-opacity-10 rounded-pill" style="font-size:11px;">Owing</span>
-                        </div>
-                        <h3 class="fw-bold mb-0">{{ number_format($studentsOwing) }}</h3>
-                        <small class="text-muted">Students Owing</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="card border-0 shadow-sm rounded-3 h-100">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="rounded-3 bg-warning text-white bg-opacity-10 p-2">
-                                <i class="bi bi-person-workspace fs-5"></i>
-                            </div>
-                            <span class="badge bg-warning bg-opacity-10 rounded-pill" style="font-size:11px;">Active</span>
+                            <span class="badge bg-warning bg-opacity-10 text-white rounded-pill"
+                                style="font-size:11px;">Active</span>
                         </div>
                         <h3 class="fw-bold mb-0">{{ $totalStaff }}</h3>
                         <small class="text-muted">Staff & Admins</small>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div class="col-6 col-lg-3">-->
+            <!--    <div class="card border-0 shadow-sm rounded-3 h-100">-->
+            <!--        <div class="card-body p-4">-->
+            <!--            <div class="d-flex align-items-center justify-content-between mb-3">-->
+            <!--                <div class="rounded-3 bg-success bg-opacity-10 p-2">-->
+            <!--                    <i class="bi bi-cash-stack fs-5 text-white"></i>-->
+            <!--                </div>-->
+            <!--                <span class="badge bg-success bg-opacity-10 text-white rounded-pill" style="font-size:11px;">This Term</span>-->
+            <!--            </div>-->
+            <!--            <h3 class="fw-bold mb-0">₦{{ number_format($collected, 0) }}</h3>-->
+            <!--            <small class="text-muted">Fees Collected</small>-->
+            <!--        </div>-->
+            <!--    </div>-->
+            <!--</div>-->
+
+            <div class="col-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="rounded-3 bg-danger bg-opacity-10 p-2">
+                                <i class="bi bi-exclamation-circle-fill fs-5 text-white"></i>
+                            </div>
+                            <span class="badge bg-danger bg-opacity-10 text-white rounded-pill"
+                                style="font-size:11px;">Owing</span>
+                        </div>
+                        <h3 class="fw-bold mb-0">{{ number_format($studentsOwing) }}</h3>
+                        <small class="text-muted">Defaulters</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- ── Stat Cards Row 2 — Financial Summary (Compulsory Fees) ── --}}
+        <div class="row g-3 mb-4">
+
+            {{-- Section label --}}
+            <div class="col-12">
+                <small class="text-muted fw-semibold text-uppercase" style="font-size:11px;letter-spacing:.08em;">
+                    <i class="bi bi-shield-check me-1 text-primary"></i>
+                    Compulsory Fee Summary — {{ $currentTerm ? ucfirst($currentTerm->name) . ' Term' : 'Current Term' }}
+                </small>
+            </div>
+
+            {{-- Defaulters --}}
+            <!--<div class="col-6 col-lg-3">-->
+            <!--    <div class="card border-0 shadow-sm rounded-3 h-100"-->
+            <!--         style="border-left:3px solid #dc3545 !important;">-->
+            <!--        <div class="card-body p-4">-->
+            <!--            <div class="d-flex align-items-center justify-content-between mb-3">-->
+            <!--                <div class="rounded-3 bg-danger bg-opacity-10 p-2">-->
+            <!--                    <i class="bi bi-person-x-fill fs-5 text-white"></i>-->
+            <!--                </div>-->
+            <!--                <span class="badge bg-danger bg-opacity-10 text-white rounded-pill" style="font-size:11px;">-->
+            <!--                    Unpaid-->
+            <!--                </span>-->
+            <!--            </div>-->
+            <!--            <h3 class="fw-bold mb-0 text-danger">{{ number_format($defaultersCount) }}</h3>-->
+            <!--            <small class="text-muted">Defaulters</small>-->
+            <!--            <div class="mt-2" style="font-size:11px;color:#9ca3af;">-->
+            <!--                Students with unpaid compulsory fees-->
+            <!--            </div>-->
+            <!--        </div>-->
+            <!--    </div>-->
+            <!--</div>-->
+
+            {{-- Amount Expected --}}
+            <div class="col-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100" style="border-left:3px solid #1A69AE !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="rounded-3 bg-primary bg-opacity-10 p-2">
+                                <i class="bi bi-calculator fs-5 text-white"></i>
+                            </div>
+                            <span class="badge bg-primary bg-opacity-10 rounded-pill" style="font-size:11px;">
+                                Expected
+                            </span>
+                        </div>
+                        <h3 class="fw-bold mb-0">₦{{ number_format($amountExpected, 0) }}</h3>
+                        <small class="text-muted">Amount Expected</small>
+                        <div class="mt-2" style="font-size:11px;color:#9ca3af;">
+                            Total compulsory fees this term
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Amount Paid --}}
+            <div class="col-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100" style="border-left:3px solid #198754 !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="rounded-3 bg-success bg-opacity-10 p-2">
+                                <i class="bi bi-check-circle-fill fs-5 text-white"></i>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-white rounded-pill" style="font-size:11px;">
+                                Collected
+                            </span>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-success">₦{{ number_format($amountPaid, 0) }}</h3>
+                        <small class="text-muted">Amount Paid</small>
+                        @if($amountExpected > 0)
+                            <div class="mt-2">
+                                <div class="progress rounded-pill" style="height:4px;">
+                                    <div class="progress-bar bg-success"
+                                        style="width:{{ min(100, round(($amountPaid / $amountExpected) * 100)) }}%">
+                                    </div>
+                                </div>
+                                <div style="font-size:11px;color:#9ca3af;margin-top:3px;">
+                                    {{ min(100, round(($amountPaid / $amountExpected) * 100)) }}% collected
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- Amount Remaining --}}
+            <div class="col-6 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 h-100" style="border-left:3px solid #f59f00 !important;">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="rounded-3 bg-warning bg-opacity-10 p-2">
+                                <i class="bi bi-hourglass-split fs-5 text-white"></i>
+                            </div>
+                            <span class="badge bg-warning bg-opacity-10 text-white rounded-pill" style="font-size:11px;">
+                                Pending
+                            </span>
+                        </div>
+                        <h3 class="fw-bold mb-0 text-warning">₦{{ number_format($amountRemaining, 0) }}</h3>
+                        <small class="text-muted">Amount Remaining</small>
+                        @if($amountExpected > 0)
+                            <div class="mt-2">
+                                <div class="progress rounded-pill" style="height:4px;">
+                                    <div class="progress-bar bg-warning"
+                                        style="width:{{ min(100, round(($amountRemaining / $amountExpected) * 100)) }}%">
+                                    </div>
+                                </div>
+                                <div style="font-size:11px;color:#9ca3af;margin-top:3px;">
+                                    {{ min(100, round(($amountRemaining / $amountExpected) * 100)) }}% still outstanding
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -182,7 +299,7 @@
                                         style="width:36px;height:36px;object-fit:cover;">
                                 @else
                                     <div class="rounded-circle bg-primary bg-opacity-10 text-primary fw-bold
-                                                                d-flex align-items-center justify-content-center flex-shrink-0"
+                                                                                        d-flex align-items-center justify-content-center flex-shrink-0"
                                         style="width:36px;height:36px;font-size:14px;">
                                         {{ strtoupper(substr($payment->student->first_name, 0, 1)) }}
                                     </div>
@@ -224,8 +341,8 @@
             const studentLabels = @json($studentGrowth->pluck('month'));
             const studentData = @json($studentGrowth->pluck('total'));
             const statusData = [
-                {{ $paymentBreakdown['paid'] ?? 0 }},
-                {{ $paymentBreakdown['partial'] ?? 0 }},
+                                {{ $paymentBreakdown['paid'] ?? 0 }},
+                                {{ $paymentBreakdown['partial'] ?? 0 }},
                 {{ $paymentBreakdown['owing'] ?? 0 }}
             ];
 
